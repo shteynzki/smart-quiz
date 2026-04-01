@@ -10,7 +10,11 @@
   },
   "dependencies": {
     "axios": "^1.14.0",
-    "vue": "^3.5.30"
+    "console": "^0.7.2",
+    "pinia": "^3.0.4",
+    "process": "^0.11.10",
+    "vue": "^3.5.30",
+    "vue-router": "^5.0.4"
   },
   "devDependencies": {
     "@types/node": "^24.12.0",
