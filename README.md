@@ -1,2 +1,2 @@
 # railstemplate
-template for rails+react app
+template for rails+vue app
