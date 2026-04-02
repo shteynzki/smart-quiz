@@ -3,7 +3,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.VITE_API_BASE_URL),
+    history: createWebHistory(),
     routes: [
         {
             path: '/',
@@ -24,6 +24,8 @@ router.beforeEach((to, from, next) => {
     const authStore = useAuthStore();
 
     if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+        next({ name: 'Login' });
+    } else if (to.name === 'Login' && authStore.isAuthenticated) {
         next({ name: 'Home' });
     } else {
         next();
