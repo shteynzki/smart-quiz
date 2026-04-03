@@ -1,4 +1,4 @@
-FROM node:alpine3.22 AS builder
+FROM node:alpine3.22 AS build
 
 WORKDIR /app
 
@@ -6,17 +6,15 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 COPY vite.config.ts ./
 
-RUN npm ci
+RUN npm install
 
-COPY src ./src
-COPY public ./public
-COPY index.html .
+COPY . .
 
 RUN npm run build
 
 FROM nginx:stable-alpine
 
-COPY --from=builder /app/build /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
