@@ -6,43 +6,64 @@ info:
 paths:
   "/api/v1/leads":
     post:
-      summary: Создать новую заявку из квиза
+      summary: Отправить заявку на дизайн-проект (Квиз)
       tags:
       - Заявки (Leads)
       parameters: []
       responses:
         '201':
-          description: Заявка успешно создана
+          description: Заявка успешно отправлена
         '422':
-          description: Ошибка валидации (например, нет телефона)
+          description: Ошибка валидации (нет телефона)
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                lead:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                      example: Алена
-                    phone:
-                      type: string
-                      example: "+79991234567"
-                    email:
-                      type: string
-                      example: alena@example.com
-                      nullable: true
-                    answers:
-                      type: object
-                      example:
-                        step_1: Квартира
-                        step_2: 50 кв.м
-                        step_3: Лофт
-                  required:
-                  - name
-                  - phone
+                name:
+                  type: string
+                  example: Иван
+                phone:
+                  type: string
+                  example: "+7 (900) 000-00-00"
+                email:
+                  type: string
+                  example: example@mail.ru
+                  nullable: true
+                room_type:
+                  type: string
+                  example: Квартира
+                zones:
+                  type: array
+                  items:
+                    type: string
+                  example:
+                  - Кухня
+                  - Гостиная
+                  - Спальня
+                area:
+                  type: integer
+                  example: 85
+                style:
+                  type: string
+                  example: Минимализм
+                budget:
+                  type: string
+                  example: 1 000 000 - 2 000 000 ₽
+                comment:
+                  type: string
+                  example: Нужен дизайн-проект для новой квартиры
+                  nullable: true
+                page_url:
+                  type: string
+                  example: https://site.ru/quiz
+                utm_source:
+                  type: string
+                  example: yandex
+              required:
+              - name
+              - phone
 servers:
 - url: https://{defaultHost}
   variables:
