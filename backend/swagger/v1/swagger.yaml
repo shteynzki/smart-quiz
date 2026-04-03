@@ -1,0 +1,50 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/api/v1/leads":
+    post:
+      summary: Создать новую заявку из квиза
+      tags:
+      - Заявки (Leads)
+      parameters: []
+      responses:
+        '201':
+          description: Заявка успешно создана
+        '422':
+          description: Ошибка валидации (например, нет телефона)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lead:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: Алена
+                    phone:
+                      type: string
+                      example: "+79991234567"
+                    email:
+                      type: string
+                      example: alena@example.com
+                      nullable: true
+                    answers:
+                      type: object
+                      example:
+                        step_1: Квартира
+                        step_2: 50 кв.м
+                        step_3: Лофт
+                  required:
+                  - name
+                  - phone
+servers:
+- url: https://{defaultHost}
+  variables:
+    defaultHost:
+      default: www.example.com
