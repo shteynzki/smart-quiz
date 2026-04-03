@@ -223,7 +223,7 @@ const handleFinalSubmit = async () => {
     lead: {
       ...store.contact,
       answers: store.answers,
-      page_url: window.location.href,
+    page_url: window.location.href,
     },
   };
   try {
