@@ -242,7 +242,7 @@ const handleFinalSubmit = async () => {
 };
 
 const resetQuiz = () => {
-      authStore.logout();
+    authStore.logout();
     router.push({ name: 'Login' })
 };
 </script>
