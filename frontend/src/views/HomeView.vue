@@ -188,11 +188,15 @@
 import { ref, computed } from "vue";
 import { useQuizStore } from "@/stores/useQuizStore";
 import { submitQuiz } from "@/api/projects";
+import { useAuthStore } from '@/stores/useAuthStore';
+import { useRouter } from 'vue-router';
 import "@/assets/quiz.css";
 
 const store = useQuizStore();
 const loading = ref(false);
 const agreed = ref(false);
+const authStore = useAuthStore();
+const router = useRouter();
 
 // Логика автоматического перехода для одиночных выборов
 const selectStep1 = (val: string) => {
@@ -238,6 +242,7 @@ const handleFinalSubmit = async () => {
 };
 
 const resetQuiz = () => {
-  window.location.reload();
+      authStore.logout();
+    router.push({ name: 'Login' })
 };
 </script>
