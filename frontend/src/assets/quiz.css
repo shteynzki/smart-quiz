@@ -1,0 +1,92 @@
+/* src/assets/quiz.css */
+
+.quiz-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+}
+
+.quiz-container h2 {
+  color: var(--primary); /* Используем синий из style.css */
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+/* Прогресс-бар */
+.progress-bar {
+  height: 6px;
+  background: #edf2f7;
+  border-radius: 10px;
+  margin: 15px 0 30px;
+}
+
+.progress-fill {
+  background: var(--primary);
+  transition: width 0.4s ease;
+}
+
+/* Кнопки выбора */
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.btn-option {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text); /* Убираем красный, ставим темный */
+  font-weight: 500;
+  text-align: center;
+}
+
+.btn-option:hover {
+  border-color: var(--primary);
+  background: var(--accent-bg);
+  color: var(--primary);
+}
+
+/* Поля ввода */
+.input-field {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 1rem;
+  color: var(--text); /* Убираем красный текст */
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* Кнопки навигации */
+.btn-submit {
+  background: #28a745; /* Зеленый для успеха */
+  color: white;
+  border: none;
+  padding: 16px;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-next {
+  background: var(--primary) !important;
+  color: white !important; /* Белый текст на синем фоне */
+}
+
+.btn-nav {
+  background: #e2e8f0;
+  color: #4a5568;
+  font-weight: 600;
+}

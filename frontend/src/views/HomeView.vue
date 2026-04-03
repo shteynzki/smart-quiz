@@ -188,6 +188,7 @@
 import { ref, computed } from "vue";
 import { useQuizStore } from "@/stores/useQuizStore";
 import { submitQuiz } from "@/api/projects";
+import "@/assets/quiz.css";
 
 const store = useQuizStore();
 const loading = ref(false);
@@ -240,110 +241,3 @@ const resetQuiz = () => {
   window.location.reload();
 };
 </script>
-
-<style scoped>
-.quiz-container {
-  max-width: 500px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  font-family: sans-serif;
-  background: #fff;
-}
-.quiz-header {
-  margin-bottom: 2rem;
-}
-.progress-bar {
-  height: 8px;
-  background: #eee;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-top: 10px;
-}
-.progress-fill {
-  height: 100%;
-  background: #4a90e2;
-  transition: 0.3s;
-}
-.options-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-.btn-option {
-  padding: 15px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: #f9f9f9;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.btn-option:hover {
-  border-color: #4a90e2;
-  background: #eef6ff;
-}
-.checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.checkbox-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-.slider {
-  width: 100%;
-  margin: 20px 0;
-}
-.input-field {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
-}
-.btn-submit {
-  width: 100%;
-  padding: 15px;
-  background: #4caf50;
-  color: red;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.btn-submit:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-.quiz-footer {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid #eee;
-}
-.btn-nav {
-  padding: 10px 25px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.btn-next {
-  background: #4a90e2;
-  color: red;
-}
-.quiz-container h2 {
-  color: #ff0000;
-}
-.input-field {
-  color: #ff0000;
-}
-.btn-option {
-  color: #ff0000;
-}
-</style>
