@@ -69,7 +69,6 @@
   border-color: var(--primary);
 }
 
-/* Кнопки навигации */
 .btn-submit {
   background: #28a745; /* Зеленый для успеха */
   color: white;
@@ -89,4 +88,20 @@
   background: #e2e8f0;
   color: #4a5568;
   font-weight: 600;
+}
+
+.other-input-wrapper {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.validation-hint {
+  color: #e53e3e;
+  font-size: 0.85rem;
+  margin-top: 10px;
+}
+.btn-option.active {
+  border-color: var(--primary);
+  background: var(--accent-bg);
 }
