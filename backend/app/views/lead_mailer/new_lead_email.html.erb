@@ -1,16 +1,23 @@
-<h2>Новая заявка из квиза</h2>
+<h2>🚀 Новая заявка из квиза</h2>
 <p><b>Имя:</b> <%= @lead.name %></p>
 <p><b>Телефон:</b> <%= @lead.phone %></p>
 <p><b>Email:</b> <%= @lead.email.presence || 'Не указан' %></p>
 
-<h3>Детали проекта:</h3>
+<h3>📋 Детали проекта:</h3>
 <ul>
-  <li><b>Тип помещения:</b> <%= @lead.answers['room_type'] %></li>
-  <li><b>Зоны:</b> <%= (@lead.answers['zones'] || []).join(', ') %></li>
-  <li><b>Площадь:</b> <%= @lead.answers['area'] %> м2</li>
-  <li><b>Стиль:</b> <%= @lead.answers['style'] %></li>
-  <li><b>Бюджет:</b> <%= @lead.answers['budget'] %></li>
+  <li><b>Тип помещения:</b> <%= @lead.answers['step_1'] || 'Не указано' %></li>
+  <li><b>Зоны:</b> <%= Array(@lead.answers['step_2']).join(', ').presence || 'Не выбраны' %></li>
+  <li><b>Площадь:</b> <%= @lead.answers['step_3'] %> м²</li>
+  <li><b>Стиль:</b> <%= @lead.answers['step_4'] || 'Не указан' %></li>
+  <li><b>Бюджет:</b> <%= @lead.answers['step_5'] || 'Не указан' %></li>
 </ul>
-<p><b>Комментарий:</b> <%= @lead.answers['comment'] %></p>
+
+<p><b>💬 Комментарий:</b> <%= @lead.comment.presence || 'Нет' %></p>
+
 <hr>
-<p><small>Отправлено: <%= @lead.created_at.strftime('%d.%m.%Y %H:%M') %></small></p>
+<p><b>🔗 Источник:</b> <%= @lead.page_url %></p>
+<% if @lead.utm_source.present? %>
+  <p><b>ADS:</b> <%= @lead.utm_source %> / <%= @lead.utm_medium %></p>
+<% end %>
+
+<p><small>Отправлено: <%= @lead.created_at.in_time_zone('Moscow').strftime('%d.%m.%Y %H:%M') %></small></p>

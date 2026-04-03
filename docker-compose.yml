@@ -35,6 +35,9 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-pgpass}
       DB_NAME: ${DB_NAME:-pgdb}
       RAILS_GROUPS: ${RAILS_GROUPS:-assets}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN} # Добавь это
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}     # И это
+      MANAGER_EMAIL: ${MANAGER_EMAIL}
     ports:
       - "${BACK_PORT:-8000}:3000"
     volumes:
