@@ -1,7 +1,7 @@
 <template>
   <div class="quiz-container">
     <!-- Прогресс-бар -->
-    <div class="quiz-header">
+    <div class="quiz-header" v-if="store.currentStep <= 6">
       <div class="progress-info">Шаг {{ store.currentStep }} из 6</div>
       <div class="progress-bar">
         <div
@@ -26,10 +26,22 @@
               'Другое',
             ]"
             :key="opt"
-            @click="selectStep1(opt)"
-            class="btn-option"
+            @click="handleStep1(opt)"
+            :class="['btn-option', { active: store.answers.step_1 === opt }]"
           >
             {{ opt }}
+          </button>
+        </div>
+
+        <div v-if="showStep1Other" class="other-input-wrapper">
+          <input
+            v-model="step1OtherValue"
+            placeholder="Укажите свой вариант..."
+            class="input-field"
+            @keyup.enter="confirmStep1Other"
+          />
+          <button @click="confirmStep1Other" class="btn-nav btn-next">
+            Подтвердить
           </button>
         </div>
       </div>
@@ -56,6 +68,7 @@
               type="checkbox"
               :value="zone"
               v-model="store.answers.step_2"
+              @change="handleZoneChange(zone)"
             />
             <span>{{ zone }}</span>
           </label>
@@ -86,6 +99,7 @@
             v-for="s in [
               'Современный',
               'Минимализм',
+              'Неоклассика',
               'Скандинавский',
               'Лофт',
               'Классика',
@@ -130,28 +144,43 @@
             placeholder="Ваше имя"
             class="input-field"
           />
+
           <input
             v-model="store.contact.phone"
-            placeholder="Телефон (обязательно)"
+            placeholder="Телефон: +7 (900) 000-00-00"
             class="input-field"
+            type="tel"
           />
+
+          <input
+            v-model="store.contact.email"
+            placeholder="E-mail (необязательно)"
+            class="input-field"
+            type="email"
+          />
+
           <textarea
             v-model="store.contact.comment"
             placeholder="Комментарий (необязательно)"
             class="input-field"
           ></textarea>
+
           <label class="checkbox-item">
             <input type="checkbox" v-model="agreed" />
             <span>Согласен на обработку данных</span>
           </label>
         </div>
+
         <button
-          :disabled="!isFormValid || loading"
+          :disabled="loading"
           @click="handleFinalSubmit"
           class="btn-submit"
         >
           {{ loading ? "Отправка..." : "Получить консультацию" }}
         </button>
+        <p v-if="!isFormValid" class="validation-hint">
+          * Заполните телефон и подтвердите согласие
+        </p>
       </div>
 
       <!-- ЭКРАН УСПЕХА -->
@@ -194,44 +223,103 @@ const store = useQuizStore();
 const loading = ref(false);
 const agreed = ref(false);
 
-// Логика автоматического перехода для одиночных выборов
-const selectStep1 = (val: string) => {
-  store.answers.step_1 = val;
-  store.nextStep();
+// Переменные для логики "Другое" на Шаге 1
+const showStep1Other = ref(false);
+const step1OtherValue = ref("");
+
+const getUtms = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return {
+    utm_source: urlParams.get("utm_source") || "",
+    utm_medium: urlParams.get("utm_medium") || "",
+    utm_campaign: urlParams.get("utm_campaign") || "",
+    utm_content: urlParams.get("utm_content") || "",
+    utm_term: urlParams.get("utm_term") || "",
+  };
 };
+
+const handleStep1 = (val: string) => {
+  if (val === "Другое") {
+    showStep1Other.value = true;
+    store.answers.step_1 = "Другое";
+  } else {
+    showStep1Other.value = false;
+    store.answers.step_1 = val;
+    store.nextStep();
+  }
+};
+
+const confirmStep1Other = () => {
+  if (step1OtherValue.value.trim()) {
+    store.answers.step_1 = step1OtherValue.value;
+    store.nextStep();
+  }
+};
+
+const handleZoneChange = (lastSelected: string) => {
+  const ALL_KEY = "Полностью всё";
+  if (lastSelected === ALL_KEY) {
+    store.answers.step_2 = [ALL_KEY];
+  } else {
+    store.answers.step_2 = store.answers.step_2.filter((z) => z !== ALL_KEY);
+  }
+};
+
 const selectStep4 = (val: string) => {
   store.answers.step_4 = val;
   store.nextStep();
 };
+
 const selectStep5 = (val: string) => {
   store.answers.step_5 = val;
   store.nextStep();
 };
 
 const isNextVisible = computed(() => {
+  if (store.currentStep === 1) return false;
   if (store.currentStep === 2) return store.answers.step_2.length > 0;
   if (store.currentStep === 3) return true;
   return false;
 });
 
 const isFormValid = computed(() => {
-  return store.contact.phone.trim().length > 5 && agreed.value;
+  const phoneDigits = store.contact.phone
+    ? store.contact.phone.replace(/\D/g, "")
+    : "";
+  return phoneDigits.length === 11 && agreed.value;
 });
 
 const handleFinalSubmit = async () => {
+  if (!isFormValid.value) {
+    alert(
+      "Пожалуйста, введите корректный номер (11 цифр) и примите соглашение.",
+    );
+    return;
+  }
+
   loading.value = true;
+
+  const utms = getUtms();
+
   const payload = {
     lead: {
-      ...store.contact,
+      name: store.contact.name,
+      phone: store.contact.phone,
+      email: store.contact.email || "",
+      comment: store.contact.comment || "",
       answers: store.answers,
-    page_url: window.location.href,
+      page_url: window.location.href,
+      ...utms,
     },
   };
+
   try {
-    await submitQuiz(payload);
+    const response = await submitQuiz(payload);
+    console.log("Успех:", response);
     store.currentStep = 7;
   } catch (e) {
-    alert("Ошибка при отправке");
+    console.error("Ошибка при отправке:", e);
+    alert("Ошибка при отправке. Попробуйте еще раз.");
   } finally {
     loading.value = false;
   }
