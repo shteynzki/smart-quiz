@@ -15,7 +15,7 @@ RSpec.describe 'api/v1/leads', type: :request do
           phone: { type: :string, example: '+7 (900) 000-00-00' },
           email: { type: :string, example: 'example@mail.ru', nullable: true },
           room_type: { type: :string, example: 'Квартира' },
-          zones: { type: :array, items: { type: :string }, example: ['Кухня', 'Гостиная', 'Спальня'] },
+          zones: { type: :array, items: { type: :string }, example: [ 'Кухня', 'Гостиная', 'Спальня' ] },
           area: { type: :integer, example: 85 },
           style: { type: :string, example: 'Минимализм' },
           budget: { type: :string, example: '1 000 000 - 2 000 000 ₽' },
@@ -27,7 +27,7 @@ RSpec.describe 'api/v1/leads', type: :request do
       }
 
       response(201, 'Заявка успешно отправлена') do
-        let(:lead_params) { { name: 'Иван', phone: '+79001234567', area: 85, zones: ['Кухня'] } }
+        let(:lead_params) { { name: 'Иван', phone: '+79001234567', area: 85, zones: [ 'Кухня' ] } }
         run_test!
       end
 
