@@ -1,45 +1,349 @@
 <template>
-  <div>
-    <h1>Мои проекты</h1>
-    
-    <div v-if="isLoading">Загрузка данных с сервера...</div>
+  <div class="quiz-container">
+    <!-- Прогресс-бар -->
+    <div class="quiz-header">
+      <div class="progress-info">Шаг {{ store.currentStep }} из 6</div>
+      <div class="progress-bar">
+        <div
+          class="progress-fill"
+          :style="{ width: (store.currentStep / 6) * 100 + '%' }"
+        ></div>
+      </div>
+    </div>
 
-    <ul v-else>
-      <li v-for="project in projects" :key="project.id">
-        {{ project.title }} — {{ project.status }}
-      </li>
-    </ul>
+    <div class="quiz-content">
+      <!-- ШАГ 1: Тип помещения -->
+      <div v-if="store.currentStep === 1">
+        <h2>Какое помещение вы планируете оформить?</h2>
+        <div class="options-grid">
+          <button
+            v-for="opt in [
+              'Квартира',
+              'Частный дом',
+              'Офис',
+              'Коммерция',
+              'Студия',
+              'Другое',
+            ]"
+            :key="opt"
+            @click="selectStep1(opt)"
+            class="btn-option"
+          >
+            {{ opt }}
+          </button>
+        </div>
+      </div>
 
-    <button @click="handleLogout">Выйти</button>
+      <!-- ШАГ 2: Зоны (Множественный выбор) -->
+      <div v-if="store.currentStep === 2">
+        <h2>Какие зоны нужно включить в проект?</h2>
+        <div class="checkbox-group">
+          <label
+            v-for="zone in [
+              'Кухня',
+              'Гостиная',
+              'Спальня',
+              'Детская',
+              'Санузел',
+              'Прихожая',
+              'Балкон',
+              'Полностью всё',
+            ]"
+            :key="zone"
+            class="checkbox-item"
+          >
+            <input
+              type="checkbox"
+              :value="zone"
+              v-model="store.answers.step_2"
+            />
+            <span>{{ zone }}</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- ШАГ 3: Площадь (Слайдер) -->
+      <div v-if="store.currentStep === 3">
+        <h2>
+          Укажите примерную площадь:
+          <strong>{{ store.answers.step_3 }} м²</strong>
+        </h2>
+        <input
+          type="range"
+          min="20"
+          max="300"
+          step="5"
+          v-model.number="store.answers.step_3"
+          class="slider"
+        />
+      </div>
+
+      <!-- ШАГ 4: Стиль -->
+      <div v-if="store.currentStep === 4">
+        <h2>Какой стиль интерьера вам ближе?</h2>
+        <div class="options-grid">
+          <button
+            v-for="s in [
+              'Современный',
+              'Минимализм',
+              'Скандинавский',
+              'Лофт',
+              'Классика',
+              'Не определился',
+            ]"
+            :key="s"
+            @click="selectStep4(s)"
+            class="btn-option"
+          >
+            {{ s }}
+          </button>
+        </div>
+      </div>
+
+      <!-- ШАГ 5: Бюджет -->
+      <div v-if="store.currentStep === 5">
+        <h2>Какой бюджет вы рассматриваете?</h2>
+        <div class="options-grid">
+          <button
+            v-for="b in [
+              'До 500к ₽',
+              '500к – 1млн ₽',
+              '1млн – 2млн ₽',
+              'От 2млн ₽',
+              'Не знаю',
+            ]"
+            :key="b"
+            @click="selectStep5(b)"
+            class="btn-option"
+          >
+            {{ b }}
+          </button>
+        </div>
+      </div>
+
+      <!-- ШАГ 6: Контакты -->
+      <div v-if="store.currentStep === 6">
+        <h2>Оставьте контакты для связи</h2>
+        <div class="form-group">
+          <input
+            v-model="store.contact.name"
+            placeholder="Ваше имя"
+            class="input-field"
+          />
+          <input
+            v-model="store.contact.phone"
+            placeholder="Телефон (обязательно)"
+            class="input-field"
+          />
+          <textarea
+            v-model="store.contact.comment"
+            placeholder="Комментарий (необязательно)"
+            class="input-field"
+          ></textarea>
+          <label class="checkbox-item">
+            <input type="checkbox" v-model="agreed" />
+            <span>Согласен на обработку данных</span>
+          </label>
+        </div>
+        <button
+          :disabled="!isFormValid || loading"
+          @click="handleFinalSubmit"
+          class="btn-submit"
+        >
+          {{ loading ? "Отправка..." : "Получить консультацию" }}
+        </button>
+      </div>
+
+      <!-- ЭКРАН УСПЕХА -->
+      <div v-if="store.currentStep === 7" class="success-screen">
+        <h2>Спасибо! 🎉</h2>
+        <p>Ваша заявка принята. Мы свяжемся с вами в ближайшее время.</p>
+        <button @click="resetQuiz" class="btn-option">
+          Вернуться в начало
+        </button>
+      </div>
+    </div>
+
+    <!-- Кнопки навигации -->
+    <div class="quiz-footer" v-if="store.currentStep < 7">
+      <button
+        v-if="store.currentStep > 1"
+        @click="store.prevStep"
+        class="btn-nav"
+      >
+        Назад
+      </button>
+      <button
+        v-if="isNextVisible"
+        @click="store.nextStep"
+        class="btn-nav btn-next"
+      >
+        Далее
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { fetchProjects, type Project } from '@/api/projects';
-import { useAuthStore } from '@/stores/useAuthStore';
-import { useRouter } from 'vue-router';
+import { ref, computed } from "vue";
+import { useQuizStore } from "@/stores/useQuizStore";
+import { submitQuiz } from "@/api/projects";
 
-const projects = ref<Project[]>([]);
-const isLoading = ref(false);
-const authStore = useAuthStore();
-const router = useRouter();
+const store = useQuizStore();
+const loading = ref(false);
+const agreed = ref(false);
 
-const handleLogout = () => {
-    authStore.logout();
-    router.push({ name: 'Login' })
-}
+// Логика автоматического перехода для одиночных выборов
+const selectStep1 = (val: string) => {
+  store.answers.step_1 = val;
+  store.nextStep();
+};
+const selectStep4 = (val: string) => {
+  store.answers.step_4 = val;
+  store.nextStep();
+};
+const selectStep5 = (val: string) => {
+  store.answers.step_5 = val;
+  store.nextStep();
+};
 
-onMounted(async () => {
-  try {
-    isLoading.value = true;
-    // Вызываем функцию. Если в .env стоит VITE_USE_MOCKS=true, 
-    // она подождет 800мс и отдаст захардкоженный массив.
-    projects.value = await fetchProjects(); 
-  } catch (error) {
-    console.error("Ошибка при загрузке проектов", error);
-  } finally {
-    isLoading.value = false;
-  }
+const isNextVisible = computed(() => {
+  if (store.currentStep === 2) return store.answers.step_2.length > 0;
+  if (store.currentStep === 3) return true;
+  return false;
 });
+
+const isFormValid = computed(() => {
+  return store.contact.phone.trim().length > 5 && agreed.value;
+});
+
+const handleFinalSubmit = async () => {
+  loading.value = true;
+  const payload = {
+    lead: {
+      ...store.contact,
+      answers: store.answers,
+      page_url: window.location.href,
+    },
+  };
+  try {
+    await submitQuiz(payload);
+    store.currentStep = 7;
+  } catch (e) {
+    alert("Ошибка при отправке");
+  } finally {
+    loading.value = false;
+  }
+};
+
+const resetQuiz = () => {
+  window.location.reload();
+};
 </script>
+
+<style scoped>
+.quiz-container {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-family: sans-serif;
+  background: #fff;
+}
+.quiz-header {
+  margin-bottom: 2rem;
+}
+.progress-bar {
+  height: 8px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+.progress-fill {
+  height: 100%;
+  background: #4a90e2;
+  transition: 0.3s;
+}
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.btn-option {
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #f9f9f9;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-option:hover {
+  border-color: #4a90e2;
+  background: #eef6ff;
+}
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.slider {
+  width: 100%;
+  margin: 20px 0;
+}
+.input-field {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+.btn-submit {
+  width: 100%;
+  padding: 15px;
+  background: #4caf50;
+  color: red;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-submit:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+.quiz-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+.btn-nav {
+  padding: 10px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-next {
+  background: #4a90e2;
+  color: red;
+}
+.quiz-container h2 {
+  color: #ff0000;
+}
+.input-field {
+  color: #ff0000;
+}
+.btn-option {
+  color: #ff0000;
+}
+</style>
