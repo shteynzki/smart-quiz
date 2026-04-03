@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_03_211718) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_03_224514) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -24,7 +24,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_03_211718) do
     t.string "phone"
     t.datetime "updated_at", null: false
     t.string "utm_campaign"
+    t.string "utm_content"
     t.string "utm_medium"
     t.string "utm_source"
+    t.string "utm_term"
   end
 end
