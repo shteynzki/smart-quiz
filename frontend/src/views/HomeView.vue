@@ -330,7 +330,8 @@ const handleFinalSubmit = async () => {
 };
 
 const resetQuiz = () => {
-    authStore.logout();
-    router.push({ name: 'Login' })
+  window.location.reload();
+  authStore.logout();
+  router.push({ name: 'Login' })
 };
 </script>
