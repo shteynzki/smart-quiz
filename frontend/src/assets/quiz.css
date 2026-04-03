@@ -1,4 +1,23 @@
-/* src/assets/quiz.css */
+.progress-info {
+  font-size: 0.9rem;
+  color: #718096;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #edf2f7;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary);
+  transition: width 0.4s ease-out;
+}
 
 .quiz-container {
   max-width: 600px;
@@ -11,7 +30,7 @@
 }
 
 .quiz-container h2 {
-  color: var(--primary); /* Используем синий из style.css */
+  color: var(--primary);
   font-size: 1.4rem;
   margin-bottom: 1.5rem;
   text-align: left;
@@ -104,4 +123,52 @@
 .btn-option.active {
   border-color: var(--primary);
   background: var(--accent-bg);
+}
+
+.btn-option {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-option:active {
+  transform: scale(0.97);
+}
+
+.btn-option.active {
+  border-color: var(--primary);
+  background: var(--accent-bg);
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+  color: var(--primary);
+}
+
+.step-content {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.other-input-wrapper {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    margin-top: -10px;
+  }
+  to {
+    opacity: 1;
+    margin-top: 15px;
+  }
 }

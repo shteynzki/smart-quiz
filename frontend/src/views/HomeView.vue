@@ -1,9 +1,9 @@
 <template>
   <div class="quiz-container">
-    <!-- Прогресс-бар -->
-    <div class="quiz-header" v-if="store.currentStep <= 6">
+    <div v-if="store.currentStep <= 6" class="progress-section">
       <div class="progress-info">Шаг {{ store.currentStep }} из 6</div>
       <div class="progress-bar">
+        <!-- Ширина меняется динамически в зависимости от шага -->
         <div
           class="progress-fill"
           :style="{ width: (store.currentStep / 6) * 100 + '%' }"
@@ -13,7 +13,7 @@
 
     <div class="quiz-content">
       <!-- ШАГ 1: Тип помещения -->
-      <div v-if="store.currentStep === 1">
+      <div v-if="store.currentStep === 1" class="step-content">
         <h2>Какое помещение вы планируете оформить?</h2>
         <div class="options-grid">
           <button
