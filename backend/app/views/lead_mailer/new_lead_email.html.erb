@@ -1,0 +1,16 @@
+<h2>Новая заявка из квиза</h2>
+<p><b>Имя:</b> <%= @lead.name %></p>
+<p><b>Телефон:</b> <%= @lead.phone %></p>
+<p><b>Email:</b> <%= @lead.email.presence || 'Не указан' %></p>
+
+<h3>Детали проекта:</h3>
+<ul>
+  <li><b>Тип помещения:</b> <%= @lead.answers['room_type'] %></li>
+  <li><b>Зоны:</b> <%= (@lead.answers['zones'] || []).join(', ') %></li>
+  <li><b>Площадь:</b> <%= @lead.answers['area'] %> м2</li>
+  <li><b>Стиль:</b> <%= @lead.answers['style'] %></li>
+  <li><b>Бюджет:</b> <%= @lead.answers['budget'] %></li>
+</ul>
+<p><b>Комментарий:</b> <%= @lead.answers['comment'] %></p>
+<hr>
+<p><small>Отправлено: <%= @lead.created_at.strftime('%d.%m.%Y %H:%M') %></small></p>

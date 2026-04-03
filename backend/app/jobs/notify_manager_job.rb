@@ -24,6 +24,7 @@ class NotifyManagerJob < ApplicationJob
       💬 <b>Комментарий:</b> #{lead.answers['comment'].presence || 'Нет'}
       
       🔗 <b>Источник:</b> #{lead.answers['page_url'] || 'Не указан'}
+      🕒 <b>Дата и время:</b> #{lead.created_at.in_time_zone('Moscow').strftime('%d.%m.%Y в %H:%M')}
     MSG
 
     # 2. Выводим текст в консоль сервера (для удобства отладки)
@@ -41,6 +42,7 @@ class NotifyManagerJob < ApplicationJob
     else
       puts "⚠️ Токен Telegram не настроен в .env. Сообщение выведено только в логи."
     end
+    LeadMailer.new_lead_email(lead).deliver_later
   end
 
   private
