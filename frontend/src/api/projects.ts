@@ -1,28 +1,13 @@
 import { apiClient } from './client';
-import { delay } from './utils';
+import type { CreateLeadPayload } from '@/types/quiz';
 
-export interface Project {
-  id: number;
-  title: string;
-  status: 'active' | 'completed';
-}
+export const submitQuiz = async (payload: CreateLeadPayload) => {
+  if (import.meta.env.VITE_USE_MOCKS === 'true') {
+    // Имитируем задержку сети
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    console.log('--- MOCK SUBMIT SUCCESS ---', payload);
+    return { data: { status: 'success' } };
+  }
 
-// МОК-функция
-const fetchProjectsMock = async (): Promise<Project[]> => {
-  await delay(800);
-  
-  return [
-    { id: 1, title: "Сделать дизайн", status: "completed" },
-    { id: 2, title: "Настроить сервер", status: "active" },
-    { id: 3, title: "Написать питч", status: "active" }
-  ];
+  return await apiClient.post('/leads', payload);
 };
-
-const fetchProjectsReal = async (): Promise<Project[]> => {
-  const response = await apiClient.get('/projects');
-  return response.data;
-};
-
-export const fetchProjects = import.meta.env.VITE_USE_MOCKS === 'true' 
-  ? fetchProjectsMock 
-  : fetchProjectsReal;
