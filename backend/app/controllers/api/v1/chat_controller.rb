@@ -8,7 +8,6 @@ class Api::V1::ChatController < ApplicationController
       request_timeout: 60
     )
 
-    # Важно: используем .to_unsafe_h или разрешаем параметры, если Rails ругается
     messages = params[:messages].map do |msg|
       { role: msg[:role], content: msg[:content] }
     end
@@ -23,7 +22,6 @@ class Api::V1::ChatController < ApplicationController
       }
     )
 
-    # ИСПРАВЛЕНИЕ ЗДЕСЬ: Проверяем наличие ключа 'choices', так как response — это Hash
     if response && response["choices"]
       ai_message = response.dig("choices", 0, "message", "content")
       if messages.any?
@@ -38,7 +36,6 @@ class Api::V1::ChatController < ApplicationController
       end
       render json: { message: ai_message }
     else
-      # Если есть ошибка в ключе 'error', выводим её в лог
       Rails.logger.error "NVIDIA Error Detail: #{response['error'] || 'Unknown error'}"
       render json: { error: "Нейросеть временно недоступна" }, status: :service_unavailable
     end

@@ -1,11 +1,9 @@
 class Api::V1::LeadsController < ApplicationController
   skip_before_action :verify_authenticity_token, raise: false
 def create
-    # Делегируем всё сервису
     result = Leads::CreateLeadService.call(lead_params, request.remote_ip)
 
     if result.success?
-      # Фронтенд ожидает JSON с сообщением и ID
       render json: {
         message: "Заявка успешно отправлена",
         id: result.lead.id
@@ -16,17 +14,14 @@ def create
   end
 
 def index
-    # 1. Безопасная проверка секрета из .env
-    secret = ENV.fetch("LEADS_REPORT_SECRET", "fallback_key_for_dev")
+    secret = ENV.fetch("LEADS_REPORT_SECRET", "supersecret")
   return render json: { error: "Forbidden" }, status: :forbidden unless params[:secret] == secret
 
   leads = Lead.all.order(created_at: :desc)
 
-    # 3. Отдаем либо CSV, либо пагинированный JSON
     if request.format.csv?
       send_data leads.to_csv, filename: "leads-#{Date.today}.csv"
     else
-      # Пагинируем (убедись, что в ApplicationController подключен include Pagy::Backend)
       @pagy, @records = pagy(leads)
       render json: {
         data: @records,
@@ -57,7 +52,7 @@ def index
   params.require(:lead).permit(
     :name, :phone, :email, :comment, :page_url, :consent,
     :utm_source, :utm_medium, :utm_campaign, :utm_content, :utm_term,
-    answers: {} # ИСПРАВЛЕНИЕ: Разрешаем любой вложенный хеш
+    answers: {}
   )
 end
 end

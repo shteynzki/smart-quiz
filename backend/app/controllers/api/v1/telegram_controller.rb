@@ -6,13 +6,11 @@ class Api::V1::TelegramController < ApplicationController
 
     if message && message[:text].to_s.start_with?("/start ")
       lead_id = message[:text].split(" ")[1]
-      # Бот динамически берет ID того, кто ему написал!
       chat_id = message.dig(:chat, :id)
 
       lead = Lead.find_by(id: lead_id)
 
       if lead
-        # Формируем красивый текст для клиента
         text = <<~MSG
           Привет, <b>#{lead.name}</b>! 👋
           Вот полная копия твоей заявки:
@@ -45,7 +43,6 @@ class Api::V1::TelegramController < ApplicationController
     token = ENV["TELEGRAM_BOT_TOKEN"]
     uri = URI.parse("https://api.telegram.org/bot#{token}/sendMessage")
 
-    # ВАЖНО: Добавили parse_mode: "HTML", чтобы работали теги <b> и эмодзи
     Net::HTTP.post_form(uri, chat_id: chat_id, text: text, parse_mode: "HTML")
   end
 end
