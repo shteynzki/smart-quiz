@@ -14,7 +14,7 @@ def create
   end
 
 def index
-    secret = ENV.fetch("LEADS_REPORT_SECRET", "supersecret")
+    secret = ENV.fetch("LEADS_EXPORT_SECRET", "supersecret")
   return render json: { error: "Forbidden" }, status: :forbidden unless params[:secret] == secret
 
   leads = Lead.all.order(created_at: :desc)
@@ -29,7 +29,7 @@ def index
           current_page: @pagy.page,
           total_pages: @pagy.pages,
           total_count: @pagy.count,
-          items_per_page: @pagy.items
+          items_per_page: @pagy.limit
         }
       }
     end
