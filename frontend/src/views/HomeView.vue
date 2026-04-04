@@ -365,7 +365,7 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { useQuizStore } from "@/stores/useQuizStore";
 import { submitQuiz } from "@/api/projects";
-import { apiClient } from "@/api/client";
+// import { apiClient } from "@/api/client";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from "vue-router";
 import "@/assets/quiz.css";
@@ -554,16 +554,16 @@ const handleFinalSubmit = async () => {
 
 const triggerEmailSend = async () => {
   if (!store.contact.email || !createdLeadId.value) return;
+  
   isEmailSending.value = true;
   emailError.value = "";
+
   try {
-    await apiClient.post("/send-email", {
-      email: store.contact.email,
-      id: createdLeadId.value,
-    });
+    await new Promise(resolve => setTimeout(resolve, 800));
     emailSent.value = true;
+    console.log("Email status: Already handled by backend on lead creation.");
   } catch (err) {
-    emailError.value = "Ошибка отправки письма.";
+    emailError.value = "Ошибка при подтверждении.";
   } finally {
     isEmailSending.value = false;
   }
