@@ -24,7 +24,7 @@ class Api::V1::LeadsController < ApplicationController
   end
 
   def index
-    # В идеале здесь должна быть проверка токена администратора!
+    return render json: { error: 'Forbidden' }, status: :forbidden unless params[:secret] == 'super_hackathon_key'
     leads = Lead.all
     
     # Безопасный способ для API-only контроллеров (без respond_to)
