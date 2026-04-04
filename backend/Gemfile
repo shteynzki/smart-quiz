@@ -32,6 +32,6 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
-
+gem "ruby-openai"
   gem "rspec-rails", "~> 7.1"  # для rswag тестов
 end
