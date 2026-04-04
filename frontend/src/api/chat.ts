@@ -1,6 +1,6 @@
 import { apiClient } from './client';
 
-const USE_MOCK = true; // ПОМЕНЯЙ НА false, КОГДА БЭКЕНД ОЖИВЕТ
+const USE_MOCK = false;
 
 export const sendChatMessage = async (history: any[]) => {
   if (USE_MOCK) {

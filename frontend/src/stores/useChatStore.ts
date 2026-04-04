@@ -8,7 +8,6 @@ export interface ChatMessage {
 }
 
 export const useChatStore = defineStore('chat', () => {
-  // Начальное состояние с системной ролью (скрытой) и приветствием
   const messages = ref<ChatMessage[]>([
     { 
       role: 'system', 

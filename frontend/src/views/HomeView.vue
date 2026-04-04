@@ -365,7 +365,7 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { useQuizStore } from "@/stores/useQuizStore";
 import { submitQuiz } from "@/api/projects";
-import { apiClient } from "@/api/client";
+// import { apiClient } from "@/api/client";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from "vue-router";
 import "@/assets/quiz.css";
@@ -554,28 +554,44 @@ const handleFinalSubmit = async () => {
 
 const triggerEmailSend = async () => {
   if (!store.contact.email || !createdLeadId.value) return;
+  
   isEmailSending.value = true;
   emailError.value = "";
+
   try {
-    await apiClient.post("/send-email", {
-      email: store.contact.email,
-      id: createdLeadId.value,
-    });
+    await new Promise(resolve => setTimeout(resolve, 800));
     emailSent.value = true;
+    console.log("Email status: Already handled by backend on lead creation.");
   } catch (err) {
-    emailError.value = "Ошибка отправки письма.";
+    emailError.value = "Ошибка при подтверждении.";
   } finally {
     isEmailSending.value = false;
   }
 };
 
-// --- 7. Экспорт и Сброс ---
 const downloadAnswers = () => {
-  const text = `Заявка: ${store.contact.name}\nТелефон: ${store.contact.phone}\nПомещение: ${store.answers.step_1}`;
-  const blob = new Blob([text], { type: "text/plain" });
+  // Формируем красивый текст из всех данных стора
+  const summary = `
+Ваша заявка на дизайн-проект:
+--------------------------------------
+Имя: ${store.contact.name}
+Телефон: ${store.contact.phone}
+Email: ${store.contact.email || 'не указан'}
+
+Помещение: ${store.answers.step_1}
+Зоны: ${Array.isArray(store.answers.step_2) ? store.answers.step_2.join(', ') : store.answers.step_2}
+Площадь: ${store.answers.step_3} м²
+Стиль: ${store.answers.step_4}
+Бюджет: ${store.answers.step_5}
+Комментарий: ${store.contact.comment || 'нет'}
+--------------------------------------
+Дата: ${new Date().toLocaleString()}
+  `.trim();
+
+  const blob = new Blob([summary], { type: "text/plain" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "quiz_results.txt";
+  link.download = `Заявка_${store.contact.name}.txt`;
   link.click();
 };
 
