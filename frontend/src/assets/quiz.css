@@ -1,0 +1,313 @@
+/* Прогресс-бар */
+.progress-info {
+  font-size: 0.9rem;
+  color: #718096;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #edf2f7;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Контейнер квиза */
+.quiz-container {
+  max-width: 650px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.07);
+  border: 1px solid var(--border);
+}
+
+.quiz-container h2 {
+  color: var(--primary);
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  line-height: 1.3;
+}
+
+/* Сетка карточек (Шаги 1, 2, 4, 5) */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.card-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 15px;
+  min-height: 120px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  transition: all 0.25s ease;
+  position: relative;
+  text-align: center;
+}
+
+.card-option:hover {
+  border-color: var(--primary);
+  background: var(--accent-bg);
+  transform: translateY(-2px);
+}
+
+.card-option.active {
+  border-color: var(--primary);
+  background: var(--accent-bg);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.15);
+  color: var(--primary);
+}
+
+.hidden-checkbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.card-option.active .card-text {
+  color: var(--primary);
+}
+
+/* Иконки в карточках */
+.card-icon-placeholder {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--primary);
+  opacity: 0.8;
+}
+
+.card-option.active .card-icon-placeholder {
+  opacity: 1;
+}
+
+/* Кастомный индикатор (Галочка для шага 2) */
+.checkbox-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.card-option.active .checkbox-indicator {
+  background: var(--primary);
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 3px #fff;
+}
+
+/* --- Слайдер (Шаг 3) --- */
+.slider {
+  width: 100%;
+  margin: 30px 0;
+  cursor: pointer;
+  height: 6px;
+  background: #edf2f7;
+  border-radius: 5px;
+  outline: none;
+}
+
+/* --- Форма контактов (Шаг 6) --- */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.input-field {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+textarea.input-field {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-top: 5px;
+}
+
+.btn-submit {
+  width: 100%;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-submit:hover {
+  opacity: 0.9;
+}
+
+.btn-submit:disabled {
+  background: #a0aec0;
+  cursor: not-allowed;
+}
+
+/* Кнопки навигации и подвал */
+.quiz-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  gap: 15px;
+}
+
+.btn-nav {
+  padding: 12px 25px;
+  border: 1px solid var(--border);
+  background: #edf2f7;
+  color: #4a5568;
+  font-weight: 600;
+  border-radius: 6px;
+  flex: 1;
+}
+
+.btn-next {
+  background: var(--primary) !important;
+  color: white !important;
+  border-color: var(--primary);
+}
+
+.btn-nav:hover {
+  filter: brightness(0.95);
+}
+
+.other-input-wrapper {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.validation-hint {
+  color: #e53e3e;
+  font-size: 0.85rem;
+  margin-top: 15px;
+  text-align: center;
+}
+
+/* Анимации */
+.step-content {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    margin-top: -10px;
+  }
+  to {
+    opacity: 1;
+    margin-top: 15px;
+  }
+}
+
+.success-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.login-card h1 {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.card-icon-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+  .quiz-container {
+    padding: 1.5rem;
+    border: none;
+    box-shadow: none;
+  }
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .card-option {
+    padding: 15px 10px;
+    min-height: 100px;
+  }
+  .card-icon-placeholder {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+  }
+  .card-text {
+    font-size: 0.85rem;
+  }
+  .other-input-wrapper {
+    flex-direction: column;
+  }
+}

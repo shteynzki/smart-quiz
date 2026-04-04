@@ -1,0 +1,23 @@
+<h2>🚀 Новая заявка из квиза</h2>
+<p><b>Имя:</b> <%= @lead.name %></p>
+<p><b>Телефон:</b> <%= @lead.phone %></p>
+<p><b>Email:</b> <%= @lead.email.presence || 'Не указан' %></p>
+
+<h3>📋 Детали проекта:</h3>
+<ul>
+  <li><b>Тип помещения:</b> <%= @lead.answers['room_type'] || 'Не указано' %></li>
+  <li><b>Зоны:</b> <%= Array(@lead.answers['zones']).join(', ').presence || 'Не выбраны' %></li>
+  <li><b>Площадь:</b> <%= @lead.answers['area'] %> м²</li>
+  <li><b>Стиль:</b> <%= @lead.answers['style'] || 'Не указан' %></li>
+  <li><b>Бюджет:</b> <%= @lead.answers['budget'] || 'Не указан' %></li>
+</ul>
+
+<p><b>💬 Комментарий:</b> <%= @lead.comment.presence || 'Нет' %></p>
+
+<hr>
+<p><b>🔗 Источник:</b> <%= @lead.page_url %></p>
+<% if @lead.utm_source.present? %>
+  <p><b>ADS:</b> <%= @lead.utm_source %> / <%= @lead.utm_medium %></p>
+<% end %>
+
+<p><small>Отправлено: <%= @lead.created_at.in_time_zone('Moscow').strftime('%d.%m.%Y %H:%M') %></small></p>
