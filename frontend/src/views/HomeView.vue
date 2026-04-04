@@ -483,7 +483,6 @@ const handleFinalSubmit = async () => {
       answers: store.answers,
       page_url: window.location.href,
       ...getUtms(),
-      should_send_email: false,
     },
   };
 
