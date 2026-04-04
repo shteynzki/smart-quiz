@@ -525,6 +525,7 @@ const handleFinalSubmit = async () => {
   const payload = {
     lead: {
       ...store.contact,
+      consent: agreed.value,
       answers: store.answers,
       page_url: window.location.href,
       ...getUtms(),
