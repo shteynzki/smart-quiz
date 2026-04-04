@@ -1,13 +1,12 @@
 require 'swagger_helper'
 
 RSpec.describe 'api/v1/leads', type: :request do
-  path '/api/v1/leads' do
+  api_base = ENV.fetch("RAILS_API", "/api/v1")
+  path '#{api_base}/leads' do
     post('Отправить заявку на дизайн-проект (Квиз)') do
       tags 'Заявки (Leads)'
       consumes 'application/json'
       produces 'application/json'
-
-      # Описываем схему с корневым ключом lead
       parameter name: :payload, in: :body, schema: {
         type: :object,
         properties: {
@@ -17,7 +16,7 @@ RSpec.describe 'api/v1/leads', type: :request do
               name: { type: :string, example: 'Иван' },
               phone: { type: :string, example: '+7 (900) 000-00-00' },
               consent: { type: :boolean, example: true },
-              email: { type: :string, example: 'example@mail.ru', nullable: true },
+              email: { type: :string, example: 'user@example.ru', nullable: true },
               comment: { type: :string, example: 'Нужен дизайн-проект для новой квартиры', nullable: true },
               page_url: { type: :string, example: 'https://site.ru/quiz' },
               utm_source: { type: :string, example: 'yandex', nullable: true },

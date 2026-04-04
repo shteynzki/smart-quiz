@@ -1,5 +1,5 @@
 Rswag::Ui.configure do |c|
-  api_base = ENV.fetch("RAILS_API", "/api/v1") 
+  api_base = ENV.fetch("RAILS_API", "/api/v1")
   # List the Swagger endpoints that you want to be documented through the
   # swagger-ui. The first parameter is the path (absolute or relative to the UI
   # host) to the corresponding endpoint and the second is a title that will be

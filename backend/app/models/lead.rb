@@ -1,4 +1,4 @@
-require "csv" 
+require "csv"
 
 class Lead < ApplicationRecord
   attr_accessor :consent
