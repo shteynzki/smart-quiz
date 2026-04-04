@@ -8,7 +8,7 @@ Rails.application.configure do
 config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
   config.action_mailer.smtp_settings = {
-    address:              'smtp.yandex.ru',
+    address:              ENV.fetch('SMTP_ADDRESS', 'smtp.yandex.ru'),
     port:                 465,
     user_name:            ENV.fetch('SMTP_USER', 'your_email@yandex.ru'),
     password:             ENV.fetch('SMTP_PASSWORD', 'your_app_password'),

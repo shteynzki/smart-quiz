@@ -77,7 +77,7 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
   
 config.action_mailer.smtp_settings = {
-    address:              'smtp.yandex.ru',
+    address:              ENV.fetch('SMTP_ADDRESS', 'smtp.yandex.ru'),
     port:                 465,
     user_name:            ENV.fetch('SMTP_USER', 'user@example.ru'),
     password:             ENV.fetch('SMTP_PASSWORD', 'password'),

@@ -1,51 +1,52 @@
 class Api::V1::LeadsController < ApplicationController
   skip_before_action :verify_authenticity_token, raise: false
+def create
+    # Делегируем всё сервису
+    result = Leads::CreateLeadService.call(lead_params, request.remote_ip)
 
-  def create
-    # Теперь lead_params сразу содержит и обычные поля, и answers
-    lead = Lead.new(lead_params)
-
-    # Фиксация события для аналитики (п. 12 ТЗ)
-    Rails.logger.info "QUIZ_EVENT: submit | IP: #{request.remote_ip}"
-
-    if lead.save
-      NotifyManagerJob.perform_later(lead.id)
-
-      # Лог успеха
-      Rails.logger.info "QUIZ_EVENT: success | Lead ID: #{lead.id}"
-
-      render json: { message: "Заявка успешно отправлена", lead: lead }, status: :created
+    if result.success?
+      # Фронтенд ожидает JSON с сообщением и ID
+      render json: { 
+        message: "Заявка успешно отправлена", 
+        id: result.lead.id 
+      }, status: :created
     else
-      # Лог ошибки
-      Rails.logger.warn "QUIZ_EVENT: validation_error | Errors: #{lead.errors.full_messages}"
-
-      render json: { errors: lead.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: result.errors }, status: :unprocessable_entity
     end
   end
 
-  def index
-    return render json: { error: 'Forbidden' }, status: :forbidden unless params[:secret] == 'super_hackathon_key'
-    leads = Lead.all
+def index
+    # 1. Безопасная проверка секрета из .env
+    secret = ENV.fetch('LEADS_REPORT_SECRET', 'fallback_key_for_dev')
+  return render json: { error: 'Forbidden' }, status: :forbidden unless params[:secret] == secret
+  
+  leads = Lead.all.order(created_at: :desc)
     
-    # Безопасный способ для API-only контроллеров (без respond_to)
+    # 3. Отдаем либо CSV, либо пагинированный JSON
     if request.format.csv?
       send_data leads.to_csv, filename: "leads-#{Date.today}.csv"
     else
-      render json: leads
+      # Пагинируем (убедись, что в ApplicationController подключен include Pagy::Backend)
+      @pagy, @records = pagy(leads)
+      render json: {
+        data: @records,
+        meta: {
+          current_page: @pagy.page,
+          total_pages: @pagy.pages,
+          total_count: @pagy.count,
+          items_per_page: @pagy.items
+        }
+      }
     end
   end
 
   private
 
-  def lead_params
-    params.require(:lead).permit(
-      :name, :phone, :email, :comment, :page_url, :consent,
-      :utm_source, :utm_medium, :utm_campaign, :utm_content, :utm_term,
-      # Явно описываем структуру jsonb
-      answers: [
-        :step_1, :step_3, :step_4, :step_5,
-        step_2: [] # Пустые скобки говорят Rails: "Тут будет массив, пропусти его"
-      ]
-    )
-  end
+ def lead_params
+  params.require(:lead).permit(
+    :name, :phone, :email, :comment, :page_url, :consent,
+    :utm_source, :utm_medium, :utm_campaign, :utm_content, :utm_term,
+    answers: {} # ИСПРАВЛЕНИЕ: Разрешаем любой вложенный хеш
+  )
+end
 end
