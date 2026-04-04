@@ -122,7 +122,7 @@ const fakeLogin = () => {
 }
 
 .start-button-refined {
-  background-color: #a3d1f1;
+  background-color: #3b82f6;
   color: #ffffff;
   border: none;
   padding: 14px 40px;
@@ -140,7 +140,7 @@ const fakeLogin = () => {
 
 .start-button-refined:hover {
   background-color: #ffffff;
-  color: #a3d1f1;
+  color: #3b82f6;
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
