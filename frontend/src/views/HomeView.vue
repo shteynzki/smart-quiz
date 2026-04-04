@@ -202,6 +202,78 @@
           <div class="success-icon">🎉</div>
           <h2>Спасибо, {{ store.contact.name }}!</h2>
           <p>Ваша заявка принята. Мы свяжемся с вами в ближайшее время.</p>
+
+          <!-- КАРТОЧКА СОХРАНЕНИЯ -->
+          <div
+            class="save-results-card"
+            style="
+              margin: 30px auto;
+              max-width: 400px;
+              padding: 20px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              text-align: left;
+            "
+          >
+            <h3 style="margin-top: 0; font-size: 1.1rem; color: var(--primary)">
+              Сохранить копию ответов:
+            </h3>
+
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 15px;
+              "
+            >
+              <button
+                @click="downloadAnswers"
+                class="btn-option"
+                style="
+                  margin: 0;
+                  justify-content: center;
+                  background: var(--white);
+                "
+              >
+                💾 Скачать текстовый файл
+              </button>
+
+              <a
+                v-if="createdLeadId"
+                :href="`https://t.me/my_smart_quiz_bot?start=${createdLeadId}`"
+                target="_blank"
+                class="btn-option"
+                style="
+                  margin: 0;
+                  text-decoration: none;
+                  text-align: center;
+                  background-color: #2aabee;
+                  color: white;
+                  border-color: #2aabee;
+                  justify-content: center;
+                "
+              >
+                ✈️ Получить в Telegram
+              </a>
+
+              <div
+                v-if="store.contact.email"
+                style="
+                  text-align: center;
+                  color: var(--text);
+                  font-size: 0.9rem;
+                  margin-top: 10px;
+                "
+              >
+                ✉️ Копия автоматически отправлена на <br /><b>{{
+                  store.contact.email
+                }}</b>
+              </div>
+            </div>
+          </div>
+
           <button
             @click="resetQuiz"
             class="btn-nav btn-next"
@@ -254,6 +326,8 @@ const loading = ref(false);
 const agreed = ref(false);
 const submitError = ref("");
 const showValidation = ref(false);
+
+const createdLeadId = ref<number | null>(null);
 
 const showStep1Other = ref(false);
 const step1OtherValue = ref("");
@@ -396,8 +470,9 @@ const handleFinalSubmit = async () => {
   };
 
   try {
-    // Оставляем только один корректный вызов
-    await submitQuiz(payload);
+    const response = await submitQuiz(payload);
+    // СОХРАНЯЕМ ID ИЗ ОТВЕТА:
+    createdLeadId.value = response.data?.lead?.id || null;
     store.currentStep = 7;
   } catch (e: any) {
     console.error("Ошибка при отправке квиза:", e);
@@ -407,6 +482,38 @@ const handleFinalSubmit = async () => {
     loading.value = false;
   }
 };
+
+// ШАГ 1: Функция скачивания
+const downloadAnswers = () => {
+  const ans = store.answers;
+  const c = store.contact;
+
+  const text = `
+Ваша заявка на дизайн-проект:
+--------------------------------------
+Имя: ${c.name}
+Телефон: ${c.phone}
+Email: ${c.email || "Не указан"}
+
+Помещение: ${ans.step_1}
+Зоны: ${ans.step_2.join(", ")}
+Площадь: ${ans.step_3} м²
+Стиль: ${ans.step_4}
+Бюджет: ${ans.step_5}
+Комментарий: ${c.comment || "Нет"}
+  `.trim();
+
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "design_project_answers.txt";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
 const resetQuiz = () => {
   window.location.reload();
 };
