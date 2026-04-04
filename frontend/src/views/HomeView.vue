@@ -76,20 +76,45 @@
             </label>
           </div>
         </div>
-        <!-- ШАГ 3: Площадь -->
-        <div v-if="store.currentStep === 3" class="step-content">
-          <h2>
-            Укажите примерную площадь:
-            <span class="area-display">{{ store.answers.step_3 }} м²</span>
-          </h2>
-          <input
-            type="range"
-            min="20"
-            max="300"
-            step="5"
-            v-model.number="store.answers.step_3"
-            class="slider"
-          />
+        <div
+          v-if="store.currentStep === 3"
+          class="step-content area-step-wrapper"
+        >
+          <h2>Укажите примерную площадь</h2>
+
+          <div class="area-card">
+            <div class="area-value-group">
+              <span class="area-number">{{ store.answers.step_3 }}</span>
+              <span class="area-unit">м²</span>
+            </div>
+            <p class="area-description" v-if="store.answers.step_3 < 50">
+              Компактное пространство
+            </p>
+            <p class="area-description" v-else-if="store.answers.step_3 < 150">
+              Средний объект
+            </p>
+            <p class="area-description" v-else>Большой объект</p>
+          </div>
+
+          <div class="slider-box">
+            <input
+              type="range"
+              min="20"
+              max="300"
+              step="5"
+              v-model.number="store.answers.step_3"
+              class="itdon-slider"
+              :style="{
+                backgroundSize:
+                  ((store.answers.step_3 - 20) * 100) / (300 - 20) + '% 100%',
+              }"
+            />
+            <div class="slider-marks">
+              <span>20</span>
+              <span>150</span>
+              <span>300</span>
+            </div>
+          </div>
         </div>
 
         <div v-if="store.currentStep === 4" class="step-content">
