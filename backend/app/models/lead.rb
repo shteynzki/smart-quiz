@@ -6,14 +6,10 @@ class Lead < ApplicationRecord
 
   validates :name, presence: { message: "обязательно для заполнения" }
 
-  validates :phone,
-            presence: { message: "обязателен для заполнения" },
-            format: {
-              with: /\A\+?[\d\s\-\(\)]+\z/,
-              message: "имеет неверный формат (только цифры, +, пробелы, скобки и дефисы)"
-            },
-            length: { minimum: 7, maximum: 20, message: "слишком короткий или длинный" }
+validates :phone, phone: { possible: true, allow_blank: false, message: "некорректный номер" }
 
+  # Перед сохранением приводим к международному формату +7999...
+  before_validation :normalize_phone
   validates :email,
             format: { with: URI::MailTo::EMAIL_REGEXP, message: "имеет неверный формат" },
             allow_blank: true
@@ -28,7 +24,7 @@ class Lead < ApplicationRecord
     # Заголовки колонок в файле (включая все UTM и URL)
     headers = %w[ID Имя Телефон Email Помещение Зоны Площадь Стиль Бюджет Комментарий Дата URL UTM_Source UTM_Medium UTM_Campaign UTM_Content UTM_Term]
 
-    CSV.generate(headers: true) do |csv|
+    "\uFEFF" + CSV.generate(headers: true) do |csv|
       csv << headers
       all.order(created_at: :desc).each do |lead|
         csv << [
@@ -74,7 +70,9 @@ class Lead < ApplicationRecord
   end
 
   private
-
+def normalize_phone
+    self.phone = Phonelib.parse(phone).e164 if phone.present?
+  end
   def all_quiz_steps_present
     return errors.add(:answers, "не могут быть пустыми") if answers.blank?
 

@@ -4,7 +4,7 @@ require "timeout" # <== Обязательно подключаем станда
 
 class NotifyManagerJob < ApplicationJob
   queue_as :default
-
+retry_on StandardError, wait: 3.seconds, attempts: 3
   def perform(lead_id)
     lead = Lead.find_by(id: lead_id)
     return unless lead

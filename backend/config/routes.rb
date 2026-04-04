@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       resources :leads, only: [ :create, :index ]
       post 'telegram/webhook', to: 'telegram#webhook'
       post 'chat', to: 'chat#create'
+      post 'analytics', to: 'analytics#create'
     end
   end
 end
