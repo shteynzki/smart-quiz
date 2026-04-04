@@ -9,12 +9,7 @@
   --border: #dce1e6;
   --accent: #004692;
   --accent-bg: rgba(0, 70, 146, 0.05);
-
   --sans: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-
-  font: 16px/150% var(--sans);
-  background: var(--bg);
-  color: var(--text);
 }
 
 #app {
