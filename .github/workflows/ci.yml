@@ -62,7 +62,7 @@ jobs:
         run: bundle exec rspec
 
       - name: Run RuboCop
-        run: bin/rubocop
+        run: bin/rubocop -a
 
       - name: Run Brakeman
         run: bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error
