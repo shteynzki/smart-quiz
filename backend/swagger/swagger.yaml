@@ -4,7 +4,7 @@ info:
   title: API V1
   version: v1
 paths:
-  "/api/v1/leads":
+  "#{api_base}/leads":
     post:
       summary: Отправить заявку на дизайн-проект (Квиз)
       tags:
@@ -30,9 +30,12 @@ paths:
                     phone:
                       type: string
                       example: "+7 (900) 000-00-00"
+                    consent:
+                      type: boolean
+                      example: true
                     email:
                       type: string
-                      example: example@mail.ru
+                      example: user@example.ru
                       nullable: true
                     comment:
                       type: string
@@ -70,8 +73,12 @@ paths:
                   required:
                   - name
                   - phone
+                  - consent
                   - answers
               required:
               - lead
 servers:
-- url: http://127.0.0.1
+- url: https://{defaultHost}
+  variables:
+    defaultHost:
+      default: www.example.com

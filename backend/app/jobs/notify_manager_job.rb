@@ -1,16 +1,14 @@
 require "net/http"
 require "uri"
-require "timeout" # <== Обязательно подключаем стандартную библиотеку таймаутов
+require "timeout"
 
 class NotifyManagerJob < ApplicationJob
   queue_as :default
-
+retry_on StandardError, wait: 3.seconds, attempts: 3
   def perform(lead_id)
     lead = Lead.find_by(id: lead_id)
     return unless lead
 
-    # 1. Формируем красивый текст сообщения
-    # ВАЖНО: Теперь используем красивые ключи (room_type, area и т.д.)
     text = <<~MSG
       🚀 <b>НОВАЯ ЗАЯВКА ИЗ КВИЗА!</b>
 
@@ -39,7 +37,7 @@ class NotifyManagerJob < ApplicationJob
     if bot_token.present? && chat_id.present?
       send_to_telegram(bot_token, chat_id, text)
     else
-      puts "⚠️ Токен Telegram не настроен в .env. Сообщение выведено только в логи."
+      puts "=====Токен Telegram не настроен в .env. Сообщение выведено только в логи.====="
     end
     LeadMailer.new_lead_email(lead).deliver_later
   end
@@ -49,17 +47,15 @@ class NotifyManagerJob < ApplicationJob
   def send_to_telegram(token, chat_id, text)
     uri = URI.parse("https://api.telegram.org/bot#{token}/sendMessage")
 
-    # Оборачиваем запрос в таймаут (5 секунд)
     Timeout.timeout(5) do
       response = Net::HTTP.post_form(uri, chat_id: chat_id, text: text, parse_mode: "HTML")
       unless response.is_a?(Net::HTTPSuccess)
-        Rails.logger.error "Ошибка отправки в ТГ: #{response.body}"
+        Rails.logger.error "======Ошибка отправки в Telegram: #{response.body}====="
       end
     end
   rescue Timeout::Error
-    # Сработает, если API Telegram зависнет и не ответит за 5 секунд
-    Rails.logger.error "Таймаут: сервер Telegram не ответил вовремя"
+    Rails.logger.error "=====Таймаут: сервер Telegram не ответил вовремя====="
   rescue StandardError => e
-    Rails.logger.error "Сетевая ошибка при отправке в ТГ: #{e.message}"
+    Rails.logger.error "=====Сетевая ошибка при отправке в Telegram: #{e.message}====="
   end
 end

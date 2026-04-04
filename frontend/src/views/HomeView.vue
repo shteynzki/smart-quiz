@@ -1,265 +1,386 @@
 <template>
-  <div class="quiz-container">
-    <div v-if="store.currentStep <= 6" class="progress-section">
-      <div class="progress-info">Шаг {{ store.currentStep }} из 6</div>
-      <div class="progress-bar">
-        <!-- Ширина меняется динамически в зависимости от шага -->
-        <div
-          class="progress-fill"
-          :style="{ width: (store.currentStep / 6) * 100 + '%' }"
-        ></div>
-      </div>
-    </div>
-
-    <div class="quiz-content">
-      <!-- ШАГ 1: Тип помещения (без кружочков) -->
-      <div v-if="store.currentStep === 1" class="step-content">
-        <h2>Какое помещение вы планируете оформить?</h2>
-        <div class="options-grid card-grid">
-          <label
-            v-for="opt in [
-              'Квартира',
-              'Частный дом',
-              'Офис',
-              'Коммерция',
-              'Студия',
-              'Другое',
-            ]"
-            :key="opt"
-            class="card-option"
-            :class="{ active: store.answers.step_1 === opt }"
-            @click="handleStep1(opt)"
-          >
-            <div class="card-icon-placeholder"><IconBox /></div>
-            <span class="card-text">{{ opt }}</span>
-          </label>
-        </div>
-
-        <div v-if="showStep1Other" class="other-input-wrapper">
-          <input
-            v-model="step1OtherValue"
-            placeholder="Укажите свой вариант..."
-            class="input-field"
-            @keyup.enter="confirmStep1Other"
-          />
-          <button @click="confirmStep1Other" class="btn-nav btn-next">
-            Подтвердить
-          </button>
+  <div class="quiz-app-wrapper">
+    <div class="quiz-container">
+      <div v-if="store.currentStep <= 6" class="progress-section">
+        <div class="progress-info">Шаг {{ store.currentStep }} из 6</div>
+        <div class="progress-bar">
+          <div
+            class="progress-fill"
+            :style="{ width: (store.currentStep / 6) * 100 + '%' }"
+          ></div>
         </div>
       </div>
 
-      <!-- ШАГ 2: Зоны (с кружочками, множественный выбор) -->
-      <div v-if="store.currentStep === 2" class="step-content">
-        <h2>Какие зоны нужно включить в проект?</h2>
-        <div class="options-grid card-grid">
-          <label
-            v-for="zone in [
-              'Кухня',
-              'Гостиная',
-              'Спальня',
-              'Детская',
-              'Санузел',
-              'Прихожая',
-              'Балкон',
-              'Полностью всё',
-            ] as string[]"
-            :key="zone"
-            class="card-option"
-            :class="{
-              active: store.answers.step_2.includes(zone),
-              'exclusive-option': zone === 'Полностью всё',
-            }"
-          >
+      <div class="quiz-content">
+        <!-- ШАГ 1: Тип помещения -->
+        <div v-if="store.currentStep === 1" class="step-content">
+          <h2>Какое помещение вы планируете оформить?</h2>
+          <div class="options-grid card-grid">
+            <label
+              v-for="opt in [
+                'Квартира',
+                'Частный дом',
+                'Офис',
+                'Коммерческое помещение',
+                'Студия / апартаменты',
+                'Другое',
+              ]"
+              :key="opt"
+              class="card-option"
+              :class="{ active: store.answers.step_1 === opt }"
+              @click="handleStep1(opt)"
+            >
+              <div class="card-icon-placeholder"><IconBox /></div>
+              <span class="card-text">{{ opt }}</span>
+            </label>
+          </div>
+
+          <div v-if="showStep1Other" class="other-input-wrapper">
             <input
-              type="checkbox"
-              :value="zone"
-              v-model="store.answers.step_2"
-              class="hidden-checkbox"
-              @change="handleZoneChange(zone)"
+              v-model="step1OtherValue"
+              placeholder="Укажите свой вариант..."
+              class="input-field"
+              @keyup.enter="confirmStep1Other"
+            />
+            <button @click="confirmStep1Other" class="btn-nav btn-next">
+              Подтвердить
+            </button>
+          </div>
+        </div>
+
+        <!-- ШАГ 2: Зоны -->
+        <div v-if="store.currentStep === 2" class="step-content">
+          <h2>Какие зоны нужно включить в проект?</h2>
+          <div class="options-grid card-grid">
+            <label
+              v-for="zone in zonesList"
+              :key="zone"
+              class="card-option"
+              :class="{
+                active: store.answers.step_2.includes(zone),
+                'exclusive-option': zone === 'Полностью всё помещение',
+              }"
+            >
+              <input
+                type="checkbox"
+                :value="zone"
+                v-model="store.answers.step_2"
+                class="hidden-checkbox"
+                @change="handleZoneChange(zone)"
+              />
+              <div class="card-icon-placeholder"><IconBox /></div>
+              <span class="card-text">{{ zone }}</span>
+              <div class="checkbox-indicator">
+                <IconCheck v-if="store.answers.step_2.includes(zone)" />
+              </div>
+            </label>
+          </div>
+        </div>
+        <div
+          v-if="store.currentStep === 3"
+          class="step-content area-step-wrapper"
+        >
+          <h2>Укажите примерную площадь</h2>
+
+          <div class="area-card">
+            <div class="area-value-group">
+              <span class="area-number">{{ store.answers.step_3 }}</span>
+              <span class="area-unit">м²</span>
+            </div>
+            <p class="area-description" v-if="store.answers.step_3 < 50">
+              Компактное пространство
+            </p>
+            <p class="area-description" v-else-if="store.answers.step_3 < 150">
+              Средний объект
+            </p>
+            <p class="area-description" v-else>Большой объект</p>
+          </div>
+
+          <div class="slider-box">
+            <input
+              type="range"
+              min="20"
+              max="300"
+              step="5"
+              v-model.number="store.answers.step_3"
+              class="itdon-slider"
+              :style="{
+                backgroundSize:
+                  ((store.answers.step_3 - 20) * 100) / (300 - 20) + '% 100%',
+              }"
+            />
+            <div class="slider-marks">
+              <span>20</span>
+              <span>150</span>
+              <span>300</span>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="store.currentStep === 4" class="step-content">
+          <h2>Какой стиль интерьера вам ближе?</h2>
+          <div class="style-grid">
+            <div
+              v-for="style in styleOptions"
+              :key="style.name"
+              class="style-card"
+              :class="{ active: store.answers.step_4 === style.name }"
+              @click="selectStep4(style.name)"
+            >
+              <div class="style-image-container">
+                <img
+                  :src="getStyleImage(style.image)"
+                  :alt="style.name"
+                  class="style-image"
+                />
+                <div
+                  class="style-check-badge"
+                  v-if="store.answers.step_4 === style.name"
+                >
+                  <IconCheck />
+                </div>
+              </div>
+              <span class="style-label">{{ style.name }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ШАГ 5: Бюджет -->
+        <div v-if="store.currentStep === 5" class="step-content">
+          <h2>Какой бюджет вы рассматриваете?</h2>
+          <div class="options-grid card-grid">
+            <label
+              v-for="opt in [
+                'До 500 000 ₽',
+                '500 000 – 1 000 000 ₽',
+                '1 000 000 – 2 000 000 ₽',
+                'От 2 000 000 ₽',
+                'Пока не знаю',
+              ]"
+              :key="opt"
+              class="card-option"
+              :class="{ active: store.answers.step_5 === opt }"
+              @click="selectStep5(opt)"
+            >
+              <div class="card-icon-placeholder"><IconBox /></div>
+              <span class="card-text">{{ opt }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- ШАГ 6: Контакты -->
+        <div v-if="store.currentStep === 6" class="step-content">
+          <h2>Оставьте контакты для связи</h2>
+          <div class="form-group">
+            <input
+              v-model="store.contact.name"
+              placeholder="Ваше имя *"
+              class="input-field"
+              :class="{ 'input-error': !store.contact.name && showValidation }"
             />
 
-            <div class="card-icon-placeholder">
-              <IconBox />
+            <div class="phone-input-group" style="display: flex; gap: 8px">
+              <select
+                v-model="countryCode"
+                class="input-field"
+                style="width: 110px; padding: 0 10px"
+              >
+                <option value="+7">🇷🇺 +7</option>
+                <option value="+375">🇧🇾 +375</option>
+                <option value="+77">🇰🇿 +7</option>
+                <option value="+995">🇬🇪 +995</option>
+                <option value="">🌐 Другое</option>
+              </select>
+              <input
+                v-model="rawPhone"
+                placeholder="(900) 000-00-00 *"
+                class="input-field"
+                type="tel"
+                style="flex: 1"
+                :class="{ 'input-error': !isPhoneValid && showValidation }"
+              />
             </div>
 
-            <span class="card-text">{{ zone }}</span>
+            <input
+              v-model="store.contact.email"
+              placeholder="E-mail (необязательно)"
+              class="input-field"
+              type="email"
+            />
 
-            <div class="checkbox-indicator">
-              <IconCheck v-if="store.answers.step_2.includes(zone)" />
-            </div>
-          </label>
-        </div>
-      </div>
+            <textarea
+              v-model="store.contact.comment"
+              placeholder="Комментарий (необязательно)"
+              class="input-field"
+            ></textarea>
 
-      <!-- ШАГ 3: Площадь (Слайдер) -->
-      <div v-if="store.currentStep === 3" class="step-content">
-        <h2>
-          Укажите примерную площадь:
-          <strong>{{ store.answers.step_3 }} м²</strong>
-        </h2>
-        <input
-          type="range"
-          min="20"
-          max="300"
-          step="5"
-          v-model.number="store.answers.step_3"
-          class="slider"
-        />
-      </div>
-
-      <!-- ШАГ 4: Стиль (без кружочков) -->
-      <div v-if="store.currentStep === 4" class="step-content">
-        <h2>Какой стиль интерьера вам ближе?</h2>
-        <div class="options-grid card-grid">
-          <label
-            v-for="opt in [
-              'Современный',
-              'Минимализм',
-              'Неоклассика',
-              'Скандинавский',
-              'Лофт',
-              'Классика',
-              'Не определился',
-            ]"
-            :key="opt"
-            class="card-option"
-            :class="{ active: store.answers.step_4 === opt }"
-            @click="selectStep4(opt)"
-          >
-            <div class="card-icon-placeholder"><IconBox /></div>
-            <span class="card-text">{{ opt }}</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- ШАГ 5: Бюджет (без кружочков) -->
-      <div v-if="store.currentStep === 5" class="step-content">
-        <h2>Какой бюджет вы рассматриваете?</h2>
-        <div class="options-grid card-grid">
-          <label
-            v-for="opt in [
-              'До 500к ₽',
-              '500к – 1млн ₽',
-              '1млн – 2млн ₽',
-              'От 2млн ₽',
-              'Не знаю',
-            ]"
-            :key="opt"
-            class="card-option"
-            :class="{ active: store.answers.step_5 === opt }"
-            @click="selectStep5(opt)"
-          >
-            <div class="card-icon-placeholder"><IconBox /></div>
-            <span class="card-text">{{ opt }}</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- ШАГ 6: Контакты -->
-      <div v-if="store.currentStep === 6" class="step-content">
-        <h2>Оставьте контакты для связи</h2>
-        <div class="form-group">
-          <input
-            v-model="store.contact.name"
-            placeholder="Ваше имя"
-            class="input-field"
-          />
-
-          <input
-            v-model="store.contact.phone"
-            placeholder="Телефон: +7 (900) 000-00-00"
-            class="input-field"
-            type="tel"
-          />
-
-          <input
-            v-model="store.contact.email"
-            placeholder="E-mail (необязательно)"
-            class="input-field"
-            type="email"
-          />
-
-          <textarea
-            v-model="store.contact.comment"
-            placeholder="Комментарий (необязательно)"
-            class="input-field"
-          ></textarea>
-
-          <label class="checkbox-item">
-            <input type="checkbox" v-model="agreed" />
-            <span>Согласен на обработку данных</span>
-          </label>
-        </div>
-
-        <button
-          :disabled="loading"
-          @click="handleFinalSubmit"
-          class="btn-submit"
-        >
-          {{ loading ? "Отправка..." : "Получить консультацию" }}
-        </button>
-        <p v-if="!isFormValid" class="validation-hint">
-          * Заполните телефон и подтвердите согласие
-        </p>
-      </div>
-
-      <!-- ЭКРАН УСПЕХА -->
-      <div v-if="store.currentStep === 7" class="success-screen">
-        <div class="quiz-container" style="text-align: center; margin-top: 0">
-          <div
-            class="card-icon-placeholder"
-            style="color: #28a745; font-size: 4rem"
-          >
-            🎉
+            <label class="checkbox-item">
+              <input type="checkbox" v-model="agreed" />
+              <span>Согласен на обработку данных *</span>
+            </label>
           </div>
-          <h2 style="color: var(--text-h)">Спасибо!</h2>
-          <p style="color: #718096; margin-bottom: 30px">
-            Ваша заявка принята. Мы свяжемся с вами в ближайшее время для
-            уточнения деталей.
-          </p>
+
+          <!-- Сообщение об ошибке отправки (вместо alert) -->
+          <p v-if="submitError" class="error-message">⚠️ {{ submitError }}</p>
+
           <button
-            @click="resetQuiz"
-            class="btn-nav btn-next"
-            style="max-width: 250px; margin: 0 auto"
+            :disabled="loading"
+            @click="handleFinalSubmit"
+            class="btn-submit"
+            :class="{ 'btn-disabled': !isFormValid }"
           >
-            Вернуться в начало
+            {{ loading ? "Отправка..." : "Получить консультацию" }}
           </button>
+
+          <p v-if="!isFormValid" class="validation-hint">
+            * Обязательно: Имя, Телефон и Согласие
+          </p>
+        </div>
+
+        <!-- ЭКРАН УСПЕХА -->
+        <div v-if="store.currentStep === 7" class="success-screen">
+          <div style="text-align: center">
+            <div class="success-icon">🎉</div>
+            <h2>Спасибо, {{ store.contact.name }}!</h2>
+            <p>Ваша заявка принята. Мы свяжемся с вами в ближайшее время.</p>
+
+            <!-- КАРТОЧКА СОХРАНЕНИЯ -->
+            <div class="save-results-card">
+              <h3>Сохранить копию ответов:</h3>
+
+              <div class="save-actions-group">
+                <button @click="downloadAnswers" class="btn-option">
+                  💾 Скачать текстовый файл
+                </button>
+
+                <a
+                  v-if="createdLeadId"
+                  :href="`https://t.me/my_smart_quiz_bot?start=${createdLeadId}`"
+                  target="_blank"
+                  class="btn-option btn-telegram"
+                >
+                  ✈️ Получить в Telegram
+                </a>
+
+                <div
+                  v-if="
+                    store.contact.email && store.contact.email.includes('@')
+                  "
+                >
+                  <button
+                    v-if="!emailSent"
+                    @click="triggerEmailSend"
+                    :disabled="isEmailSending"
+                    class="btn-option btn-email-trigger"
+                  >
+                    <span v-if="!isEmailSending"
+                      >📩 Подтвердить отправку на почту</span
+                    >
+                    <span v-else>⏳ Отправляем письмо...</span>
+                  </button>
+
+                  <div v-else class="email-status-success">
+                    ✅ Результаты отправлены на {{ store.contact.email }}
+                  </div>
+
+                  <p v-if="emailError" class="email-status-error">
+                    {{ emailError }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <button @click="resetQuiz" class="btn-nav btn-next btn-reset-quiz">
+              Вернуться в начало
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div
-      class="quiz-footer"
-      v-if="store.currentStep > 1 && store.currentStep < 6"
-    >
-      <button @click="store.prevStep" class="btn-nav">Назад</button>
-      <button
-        v-if="isNextVisible"
-        @click="store.nextStep"
-        class="btn-nav btn-next"
+      <div
+        class="quiz-footer"
+        v-if="store.currentStep > 1 && store.currentStep <= 6"
       >
-        Далее
-      </button>
+        <button @click="store.prevStep" class="btn-nav">Назад</button>
+        <button
+          v-if="isNextVisible && store.currentStep < 6"
+          @click="store.nextStep"
+          class="btn-nav btn-next"
+        >
+          Далее
+        </button>
+      </div>
+      <ChatWidget v-if="store.currentStep >= 1 && store.currentStep <= 6" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useQuizStore } from "@/stores/useQuizStore";
-import { submitQuiz } from "@/api/projects";
+import { submitQuiz, sendEmailConfirmation } from "@/api/projects";
+// import { apiClient } from "@/api/client";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from "vue-router";
 import "@/assets/quiz.css";
 
+import ChatWidget from "@/components/ChatWidget.vue"; // Импортируем
+import { useChatStore } from "@/stores/useChatStore";
+
+const chatStore = useChatStore(); // Инициализируем
+
+// --- 1. Инициализация и основные состояния ---
 const store = useQuizStore();
-const loading = ref(false);
-const agreed = ref(false);
 const authStore = useAuthStore();
 const router = useRouter();
 
+const loading = ref(false);
+const agreed = ref(false);
+const submitError = ref("");
+const showValidation = ref(false);
+const createdLeadId = ref<number | null>(null);
+
+// Состояния для телефона
+const countryCode = ref("+7");
+const rawPhone = ref("");
+
+// Состояния для Шага 1 (свой вариант)
 const showStep1Other = ref(false);
 const step1OtherValue = ref("");
+
+// Состояния для Email (Исправлено: объявлены один раз)
+const emailSent = ref(false);
+const isEmailSending = ref(false);
+const emailError = ref("");
+
+// --- 2. Справочные данные ---
+const styleOptions = [
+  { name: "Современный", image: "modern.png" },
+  { name: "Минимализм", image: "contemporary.png" },
+  { name: "Неоклассика", image: "neoclass.png" },
+  { name: "Скандинавский", image: "scandinav.png" },
+  { name: "Лофт", image: "loft.png" },
+  { name: "Классика", image: "classical.png" },
+  { name: "Пока не определился", image: "login.png" },
+];
+
+const zonesList = [
+  "Кухня",
+  "Гостиная",
+  "Спальня",
+  "Детская",
+  "Санузел",
+  "Прихожая",
+  "Кабинет",
+  "Гардеробная",
+  "Балкон / лоджия",
+  "Полностью всё помещение",
+];
+
+// --- 3. Вспомогательные функции ---
+const getStyleImage = (name: string) => {
+  return new URL(`../assets/${name}`, import.meta.url).href;
+};
 
 const getUtms = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -272,6 +393,11 @@ const getUtms = () => {
   };
 };
 
+const trackEvent = (eventName: string) => {
+  console.log(`[Analytics] Event: ${eventName}`);
+};
+
+// --- 4. Логика шагов ---
 const handleStep1 = (val: string) => {
   if (val === "Другое") {
     showStep1Other.value = true;
@@ -284,18 +410,25 @@ const handleStep1 = (val: string) => {
 };
 
 const confirmStep1Other = () => {
-  if (step1OtherValue.value.trim()) {
+  if (step1OtherValue.value.trim().length > 0) {
     store.answers.step_1 = step1OtherValue.value;
+    showStep1Other.value = false;
     store.nextStep();
   }
 };
 
 const handleZoneChange = (lastSelected: string) => {
-  const ALL_KEY = "Полностью всё";
+  const ALL_KEY = "Полностью всё помещение";
   if (lastSelected === ALL_KEY) {
-    store.answers.step_2 = [ALL_KEY];
+    store.answers.step_2 = store.answers.step_2.includes(ALL_KEY)
+      ? [...zonesList]
+      : [];
   } else {
     store.answers.step_2 = store.answers.step_2.filter((z) => z !== ALL_KEY);
+    const others = zonesList.filter((z) => z !== ALL_KEY);
+    if (others.every((z) => store.answers.step_2.includes(z))) {
+      store.answers.step_2.push(ALL_KEY);
+    }
   }
 };
 
@@ -309,8 +442,10 @@ const selectStep5 = (val: string) => {
   store.nextStep();
 };
 
+// --- 5. Вычисляемые свойства (Валидация) ---
 const isNextVisible = computed(() => {
-  if (store.currentStep === 1) return false;
+  if (store.currentStep === 1)
+    return !showStep1Other.value || step1OtherValue.value.length > 0;
   if (store.currentStep === 2) return store.answers.step_2.length > 0;
   if (store.currentStep === 3) return true;
   if (store.currentStep === 4) return !!store.answers.step_4;
@@ -318,52 +453,116 @@ const isNextVisible = computed(() => {
   return false;
 });
 
+const isPhoneValid = computed(
+  () => rawPhone.value.replace(/\D/g, "").length >= 9,
+);
+
 const isFormValid = computed(() => {
-  const phoneDigits = store.contact.phone
-    ? store.contact.phone.replace(/\D/g, "")
-    : "";
-  return phoneDigits.length === 11 && agreed.value;
+  const nameValid = store.contact.name?.trim().length > 0;
+  return isPhoneValid.value && agreed.value && nameValid;
 });
 
+// --- 6. Работа с API ---
 const handleFinalSubmit = async () => {
   if (!isFormValid.value) {
-    alert(
-      "Пожалуйста, введите корректный номер (11 цифр) и примите соглашение.",
-    );
+    showValidation.value = true;
     return;
   }
 
   loading.value = true;
+  submitError.value = "";
 
-  const utms = getUtms();
+  // Собираем телефон
+  store.contact.phone = `${countryCode.value} ${rawPhone.value.trim()}`;
 
+  // Формируем тот самый payload, которого не хватало
   const payload = {
     lead: {
-      name: store.contact.name,
-      phone: store.contact.phone,
-      email: store.contact.email || "",
-      comment: store.contact.comment || "",
+      ...store.contact,
+      consent: agreed.value,
       answers: store.answers,
       page_url: window.location.href,
-      ...utms,
+      ...getUtms(),
     },
   };
 
   try {
     const response = await submitQuiz(payload);
-    console.log("Успех:", response);
-    store.currentStep = 7;
-  } catch (e) {
-    console.error("Ошибка при отправке:", e);
-    alert("Ошибка при отправке. Попробуйте еще раз.");
+
+    // Проверяем успешность (обычно 200 или 201)
+    if (response.status === 200 || response.status === 201) {
+      // КРИТИЧНО: сохраняем ID для Телеграма и Почты
+      createdLeadId.value =
+        response.data?.id || response.data?.lead?.id || null;
+
+      store.currentStep = 7;
+      chatStore.clearChat();
+      trackEvent("quiz_success");
+    }
+  } catch (e: any) {
+    console.error(e);
+    submitError.value = "Ошибка при отправке. Попробуйте еще раз.";
   } finally {
     loading.value = false;
   }
 };
 
-const resetQuiz = () => {
-  window.location.reload();
-  authStore.logout();
-  router.push({ name: "Login" });
+const triggerEmailSend = async () => {
+  if (!store.contact.email || !createdLeadId.value) return;
+
+  isEmailSending.value = true;
+  emailError.value = "";
+
+  try {
+    await sendEmailConfirmation(createdLeadId.value);
+    emailSent.value = true;
+    console.log("Email status: Already handled by backend on lead creation.");
+  } catch (err) {
+    emailError.value = "Ошибка при подтверждении.";
+  } finally {
+    isEmailSending.value = false;
+  }
 };
+
+const downloadAnswers = () => {
+  // Формируем красивый текст из всех данных стора
+  const summary = `
+Ваша заявка на дизайн-проект:
+--------------------------------------
+Имя: ${store.contact.name}
+Телефон: ${store.contact.phone}
+Email: ${store.contact.email || "не указан"}
+
+Помещение: ${store.answers.step_1}
+Зоны: ${Array.isArray(store.answers.step_2) ? store.answers.step_2.join(", ") : store.answers.step_2}
+Площадь: ${store.answers.step_3} м²
+Стиль: ${store.answers.step_4}
+Бюджет: ${store.answers.step_5}
+Комментарий: ${store.contact.comment || "нет"}
+--------------------------------------
+Дата: ${new Date().toLocaleString()}
+  `.trim();
+
+  const blob = new Blob([summary], { type: "text/plain" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `Заявка_${store.contact.name}.txt`;
+  link.click();
+};
+
+const resetQuiz = () => {
+  // Используем authStore и router, чтобы TS не выдавал ошибку unused variable
+  authStore.logout?.();
+  router.push("/").then(() => window.location.reload());
+};
+
+onMounted(() => trackEvent("quiz_start"));
+
+watch(
+  () => store.currentStep,
+  (step) => {
+    if (step === 6) trackEvent("quiz_form_view");
+    else if (step < 6) trackEvent(`quiz_step_${step}`);
+  },
+);
 </script>

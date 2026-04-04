@@ -1,4 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap");
+
 :root {
+  --main-font: "Montserrat", sans-serif;
   --primary: #004692;
   --primary-rgb: 0, 70, 146;
   --primary-hover: #00356b;
@@ -9,12 +12,12 @@
   --border: #dce1e6;
   --accent: #004692;
   --accent-bg: rgba(0, 70, 146, 0.05);
+}
 
-  --sans: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-
-  font: 16px/150% var(--sans);
-  background: var(--bg);
-  color: var(--text);
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #app {
@@ -25,19 +28,24 @@
   display: flex;
   flex-direction: column;
   background: var(--bg);
+  font-family: var(--main-font);
 }
 
 body {
   margin: 0;
   background: var(--bg);
+  font-family: var(--main-font);
+  color: var(--text);
 }
 
 h1,
 h2,
 h3 {
-  font-family: var(--sans);
+  font-family: var(--main-font);
   color: var(--text-h);
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 h1 {
@@ -47,10 +55,11 @@ h1 {
 }
 
 button {
-  font-family: var(--sans);
+  font-family: var(--main-font);
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 8px;
   transition: all 0.2s ease;
+  border: none;
 }
 
 .hero,
@@ -65,6 +74,6 @@ button {
   padding: 20px;
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Чтобы квиз не прыгал по вертикали */
+  align-items: flex-start;
   flex-grow: 1;
 }

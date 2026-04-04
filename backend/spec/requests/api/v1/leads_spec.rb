@@ -1,13 +1,12 @@
 require 'swagger_helper'
 
 RSpec.describe 'api/v1/leads', type: :request do
-  path '/api/v1/leads' do
+  api_base = ENV.fetch("RAILS_API", "/api/v1")
+  path '#{api_base}/leads' do
     post('Отправить заявку на дизайн-проект (Квиз)') do
       tags 'Заявки (Leads)'
       consumes 'application/json'
       produces 'application/json'
-
-      # Описываем схему с корневым ключом lead
       parameter name: :payload, in: :body, schema: {
         type: :object,
         properties: {
@@ -16,7 +15,8 @@ RSpec.describe 'api/v1/leads', type: :request do
             properties: {
               name: { type: :string, example: 'Иван' },
               phone: { type: :string, example: '+7 (900) 000-00-00' },
-              email: { type: :string, example: 'example@mail.ru', nullable: true },
+              consent: { type: :boolean, example: true },
+              email: { type: :string, example: 'user@example.ru', nullable: true },
               comment: { type: :string, example: 'Нужен дизайн-проект для новой квартиры', nullable: true },
               page_url: { type: :string, example: 'https://site.ru/quiz' },
               utm_source: { type: :string, example: 'yandex', nullable: true },
@@ -24,10 +24,10 @@ RSpec.describe 'api/v1/leads', type: :request do
                 type: :object,
                 properties: {
                   step_1: { type: :string, example: 'Квартира' },
-                  step_2: { 
-                    type: :array, 
-                    items: { type: :string }, 
-                    example: [ 'Кухня', 'Гостиная' ] 
+                  step_2: {
+                    type: :array,
+                    items: { type: :string },
+                    example: [ 'Кухня', 'Гостиная' ]
                   },
                   step_3: { type: :integer, example: 85 },
                   step_4: { type: :string, example: 'Минимализм' },
@@ -35,7 +35,7 @@ RSpec.describe 'api/v1/leads', type: :request do
                 }
               }
             },
-            required: [ 'name', 'phone', 'answers' ]
+            required: [ 'name', 'phone', 'consent', 'answers' ]
           }
         },
         required: [ 'lead' ]
@@ -43,12 +43,19 @@ RSpec.describe 'api/v1/leads', type: :request do
 
       response(201, 'Заявка успешно отправлена') do
         let(:payload) do
-          { 
-            lead: { 
-              name: 'Иван', 
-              phone: '+79001234567', 
-              answers: { 'step_2' => ['Кухня'] } 
-            } 
+          {
+              lead: {
+                name: 'Иван',
+                phone: '+79001234567',
+                consent: true,
+                answers: {
+                  'step_1' => 'Квартира',
+                  'step_2' => [ 'Кухня' ],
+                  'step_3' => 85,
+                  'step_4' => 'Минимализм',
+                  'step_5' => '1 000 000 - 2 000 000 ₽'
+                }
+              }
           }
         end
         run_test!
@@ -56,11 +63,18 @@ RSpec.describe 'api/v1/leads', type: :request do
 
       response(422, 'Ошибка валидации (нет телефона)') do
         let(:payload) do
-          { 
-            lead: { 
-              name: 'Иван', 
-              answers: { 'step_2' => ['Кухня'] } 
-            } 
+          {
+            lead: {
+              name: 'Иван',
+              consent: true,
+              answers: {
+                'step_1' => 'Квартира',
+                'step_2' => [ 'Кухня' ],
+                'step_3' => 85,
+                'step_4' => 'Минимализм',
+                'step_5' => '1 000 000 - 2 000 000 ₽'
+              }
+            }
           }
         end
         run_test!

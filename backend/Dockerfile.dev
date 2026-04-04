@@ -1,4 +1,4 @@
-FROM ruby:3.4.8-slim
+FROM ruby:3.4.9-slim
 
 WORKDIR /app
 
@@ -16,10 +16,11 @@ COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
 COPY . .
+RUN chmod +x ./entrypoint.sh
 
 EXPOSE 3000
 
-CMD rm -f /app/tmp/pids/server.pid && \
-    exec bundle exec rails server -b 0.0.0.0 -p 3000
+#CMD rm -f /app/tmp/pids/server.pid && \
+#    exec bundle exec rails server -b 0.0.0.0 -p 3000
 
-#ENTRYPOINT ["./entrypoint.sh"] 
+ENTRYPOINT ["./entrypoint.sh"] 
