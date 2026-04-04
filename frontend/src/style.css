@@ -1,5 +1,6 @@
 :root {
   --primary: #004692;
+  --primary-rgb: 0, 70, 146;
   --primary-hover: #00356b;
   --bg: #f5f7f9;
   --white: #ffffff;

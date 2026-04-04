@@ -12,11 +12,11 @@
     </div>
 
     <div class="quiz-content">
-      <!-- ШАГ 1: Тип помещения -->
+      <!-- ШАГ 1: Тип помещения (без кружочков) -->
       <div v-if="store.currentStep === 1" class="step-content">
         <h2>Какое помещение вы планируете оформить?</h2>
-        <div class="options-grid">
-          <button
+        <div class="options-grid card-grid">
+          <label
             v-for="opt in [
               'Квартира',
               'Частный дом',
@@ -26,11 +26,13 @@
               'Другое',
             ]"
             :key="opt"
+            class="card-option"
+            :class="{ active: store.answers.step_1 === opt }"
             @click="handleStep1(opt)"
-            :class="['btn-option', { active: store.answers.step_1 === opt }]"
           >
-            {{ opt }}
-          </button>
+            <div class="card-icon-placeholder"><IconBox /></div>
+            <span class="card-text">{{ opt }}</span>
+          </label>
         </div>
 
         <div v-if="showStep1Other" class="other-input-wrapper">
@@ -46,10 +48,10 @@
         </div>
       </div>
 
-      <!-- ШАГ 2: Зоны (Множественный выбор) -->
-      <div v-if="store.currentStep === 2">
+      <!-- ШАГ 2: Зоны (с кружочками, множественный выбор) -->
+      <div v-if="store.currentStep === 2" class="step-content">
         <h2>Какие зоны нужно включить в проект?</h2>
-        <div class="checkbox-group">
+        <div class="options-grid card-grid">
           <label
             v-for="zone in [
               'Кухня',
@@ -60,23 +62,37 @@
               'Прихожая',
               'Балкон',
               'Полностью всё',
-            ]"
+            ] as string[]"
             :key="zone"
-            class="checkbox-item"
+            class="card-option"
+            :class="{
+              active: store.answers.step_2.includes(zone),
+              'exclusive-option': zone === 'Полностью всё',
+            }"
           >
             <input
               type="checkbox"
               :value="zone"
               v-model="store.answers.step_2"
+              class="hidden-checkbox"
               @change="handleZoneChange(zone)"
             />
-            <span>{{ zone }}</span>
+
+            <div class="card-icon-placeholder">
+              <IconBox />
+            </div>
+
+            <span class="card-text">{{ zone }}</span>
+
+            <div class="checkbox-indicator">
+              <IconCheck v-if="store.answers.step_2.includes(zone)" />
+            </div>
           </label>
         </div>
       </div>
 
       <!-- ШАГ 3: Площадь (Слайдер) -->
-      <div v-if="store.currentStep === 3">
+      <div v-if="store.currentStep === 3" class="step-content">
         <h2>
           Укажите примерную площадь:
           <strong>{{ store.answers.step_3 }} м²</strong>
@@ -91,12 +107,12 @@
         />
       </div>
 
-      <!-- ШАГ 4: Стиль -->
-      <div v-if="store.currentStep === 4">
+      <!-- ШАГ 4: Стиль (без кружочков) -->
+      <div v-if="store.currentStep === 4" class="step-content">
         <h2>Какой стиль интерьера вам ближе?</h2>
-        <div class="options-grid">
-          <button
-            v-for="s in [
+        <div class="options-grid card-grid">
+          <label
+            v-for="opt in [
               'Современный',
               'Минимализм',
               'Неоклассика',
@@ -105,38 +121,42 @@
               'Классика',
               'Не определился',
             ]"
-            :key="s"
-            @click="selectStep4(s)"
-            class="btn-option"
+            :key="opt"
+            class="card-option"
+            :class="{ active: store.answers.step_4 === opt }"
+            @click="selectStep4(opt)"
           >
-            {{ s }}
-          </button>
+            <div class="card-icon-placeholder"><IconBox /></div>
+            <span class="card-text">{{ opt }}</span>
+          </label>
         </div>
       </div>
 
-      <!-- ШАГ 5: Бюджет -->
-      <div v-if="store.currentStep === 5">
+      <!-- ШАГ 5: Бюджет (без кружочков) -->
+      <div v-if="store.currentStep === 5" class="step-content">
         <h2>Какой бюджет вы рассматриваете?</h2>
-        <div class="options-grid">
-          <button
-            v-for="b in [
+        <div class="options-grid card-grid">
+          <label
+            v-for="opt in [
               'До 500к ₽',
               '500к – 1млн ₽',
               '1млн – 2млн ₽',
               'От 2млн ₽',
               'Не знаю',
             ]"
-            :key="b"
-            @click="selectStep5(b)"
-            class="btn-option"
+            :key="opt"
+            class="card-option"
+            :class="{ active: store.answers.step_5 === opt }"
+            @click="selectStep5(opt)"
           >
-            {{ b }}
-          </button>
+            <div class="card-icon-placeholder"><IconBox /></div>
+            <span class="card-text">{{ opt }}</span>
+          </label>
         </div>
       </div>
 
       <!-- ШАГ 6: Контакты -->
-      <div v-if="store.currentStep === 6">
+      <div v-if="store.currentStep === 6" class="step-content">
         <h2>Оставьте контакты для связи</h2>
         <div class="form-group">
           <input
@@ -185,23 +205,34 @@
 
       <!-- ЭКРАН УСПЕХА -->
       <div v-if="store.currentStep === 7" class="success-screen">
-        <h2>Спасибо! 🎉</h2>
-        <p>Ваша заявка принята. Мы свяжемся с вами в ближайшее время.</p>
-        <button @click="resetQuiz" class="btn-option">
-          Вернуться в начало
-        </button>
+        <div class="quiz-container" style="text-align: center; margin-top: 0">
+          <div
+            class="card-icon-placeholder"
+            style="color: #28a745; font-size: 4rem"
+          >
+            🎉
+          </div>
+          <h2 style="color: var(--text-h)">Спасибо!</h2>
+          <p style="color: #718096; margin-bottom: 30px">
+            Ваша заявка принята. Мы свяжемся с вами в ближайшее время для
+            уточнения деталей.
+          </p>
+          <button
+            @click="resetQuiz"
+            class="btn-nav btn-next"
+            style="max-width: 250px; margin: 0 auto"
+          >
+            Вернуться в начало
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- Кнопки навигации -->
-    <div class="quiz-footer" v-if="store.currentStep < 7">
-      <button
-        v-if="store.currentStep > 1"
-        @click="store.prevStep"
-        class="btn-nav"
-      >
-        Назад
-      </button>
+    <div
+      class="quiz-footer"
+      v-if="store.currentStep > 1 && store.currentStep < 6"
+    >
+      <button @click="store.prevStep" class="btn-nav">Назад</button>
       <button
         v-if="isNextVisible"
         @click="store.nextStep"
@@ -217,8 +248,8 @@
 import { ref, computed } from "vue";
 import { useQuizStore } from "@/stores/useQuizStore";
 import { submitQuiz } from "@/api/projects";
-import { useAuthStore } from '@/stores/useAuthStore';
-import { useRouter } from 'vue-router';
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useRouter } from "vue-router";
 import "@/assets/quiz.css";
 
 const store = useQuizStore();
@@ -227,7 +258,6 @@ const agreed = ref(false);
 const authStore = useAuthStore();
 const router = useRouter();
 
-// Переменные для логики "Другое" на Шаге 1
 const showStep1Other = ref(false);
 const step1OtherValue = ref("");
 
@@ -283,6 +313,8 @@ const isNextVisible = computed(() => {
   if (store.currentStep === 1) return false;
   if (store.currentStep === 2) return store.answers.step_2.length > 0;
   if (store.currentStep === 3) return true;
+  if (store.currentStep === 4) return !!store.answers.step_4;
+  if (store.currentStep === 5) return !!store.answers.step_5;
   return false;
 });
 
@@ -332,6 +364,6 @@ const handleFinalSubmit = async () => {
 const resetQuiz = () => {
   window.location.reload();
   authStore.logout();
-  router.push({ name: 'Login' })
+  router.push({ name: "Login" });
 };
 </script>
