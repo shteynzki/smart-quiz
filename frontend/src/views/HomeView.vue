@@ -153,12 +153,27 @@
             :class="{ 'input-error': !store.contact.name && showValidation }"
           />
 
-          <input
-            v-model="store.contact.phone"
-            placeholder="Телефон: +7 (900) 000-00-00 *"
-            class="input-field"
-            type="tel"
-          />
+          <div class="phone-input-group" style="display: flex; gap: 8px">
+            <select
+              v-model="countryCode"
+              class="input-field"
+              style="width: 110px; padding: 0 10px"
+            >
+              <option value="+7">🇷🇺 +7</option>
+              <option value="+375">🇧🇾 +375</option>
+              <option value="+77">🇰🇿 +7</option>
+              <option value="+995">🇬🇪 +995</option>
+              <option value="">🌐 Другое</option>
+            </select>
+            <input
+              v-model="rawPhone"
+              placeholder="(900) 000-00-00 *"
+              class="input-field"
+              type="tel"
+              style="flex: 1"
+              :class="{ 'input-error': !isPhoneValid && showValidation }"
+            />
+          </div>
 
           <input
             v-model="store.contact.email"
@@ -258,18 +273,62 @@
                 ✈️ Получить в Telegram
               </a>
 
+              <!-- Кнопка отправки на почту (появляется только если email не пустой) -->
               <div
-                v-if="store.contact.email"
-                style="
-                  text-align: center;
-                  color: var(--text);
-                  font-size: 0.9rem;
-                  margin-top: 10px;
-                "
+                v-if="store.contact.email && store.contact.email.includes('@')"
+                style="margin-top: 10px"
               >
-                ✉️ Копия автоматически отправлена на <br /><b>{{
-                  store.contact.email
-                }}</b>
+                <!-- Кнопка действия (скрывается после успешной отправки) -->
+                <button
+                  v-if="!emailSent"
+                  @click="triggerEmailSend"
+                  :disabled="isEmailSending"
+                  class="btn-option"
+                  style="
+                    margin: 0;
+                    justify-content: center;
+                    background: #f3f4f6; /* Светло-серый фон для отличия */
+                    border: 1px solid #d1d5db;
+                    width: 100%;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                  "
+                  :style="isEmailSending ? 'opacity: 0.7;' : ''"
+                >
+                  <span v-if="!isEmailSending"
+                    >📩 Подтвердить отправку на почту</span
+                  >
+                  <span v-else>⏳ Отправляем письмо...</span>
+                </button>
+
+                <!-- Сообщение об успехе -->
+                <div
+                  v-else
+                  style="
+                    text-align: center;
+                    color: #10b981;
+                    font-weight: 500;
+                    font-size: 0.95rem;
+                    padding: 10px;
+                    background: #ecfdf5;
+                    border-radius: 6px;
+                  "
+                >
+                  ✅ Результаты отправлены на {{ store.contact.email }}
+                </div>
+
+                <!-- Текст ошибки, если что-то пошло не так -->
+                <p
+                  v-if="emailError"
+                  style="
+                    color: #ef4444;
+                    font-size: 0.8rem;
+                    text-align: center;
+                    margin-top: 5px;
+                  "
+                >
+                  {{ emailError }}
+                </p>
               </div>
             </div>
           </div>
@@ -298,6 +357,7 @@
         Далее
       </button>
     </div>
+    <ChatWidget v-if="store.currentStep >= 1 && store.currentStep <= 6" />
   </div>
 </template>
 
@@ -305,10 +365,41 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { useQuizStore } from "@/stores/useQuizStore";
 import { submitQuiz } from "@/api/projects";
-import { useAuthStore } from '@/stores/useAuthStore';
-import { useRouter } from 'vue-router';
+import { apiClient } from "@/api/client";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useRouter } from "vue-router";
 import "@/assets/quiz.css";
 
+import ChatWidget from "@/components/ChatWidget.vue"; // Импортируем
+import { useChatStore } from "@/stores/useChatStore";
+
+const chatStore = useChatStore(); // Инициализируем
+
+// --- 1. Инициализация и основные состояния ---
+const store = useQuizStore();
+const authStore = useAuthStore();
+const router = useRouter();
+
+const loading = ref(false);
+const agreed = ref(false);
+const submitError = ref("");
+const showValidation = ref(false);
+const createdLeadId = ref<number | null>(null);
+
+// Состояния для телефона
+const countryCode = ref("+7");
+const rawPhone = ref("");
+
+// Состояния для Шага 1 (свой вариант)
+const showStep1Other = ref(false);
+const step1OtherValue = ref("");
+
+// Состояния для Email (Исправлено: объявлены один раз)
+const emailSent = ref(false);
+const isEmailSending = ref(false);
+const emailError = ref("");
+
+// --- 2. Справочные данные ---
 const styleOptions = [
   { name: "Современный", image: "modern.png" },
   { name: "Минимализм", image: "contemporary.png" },
@@ -318,69 +409,6 @@ const styleOptions = [
   { name: "Классика", image: "classical.png" },
   { name: "Пока не определился", image: "login.png" },
 ];
-
-const getStyleImage = (name: string) => {
-  return new URL(`../assets/${name}`, import.meta.url).href;
-};
-
-const store = useQuizStore();
-const loading = ref(false);
-const agreed = ref(false);
-const submitError = ref("");
-const showValidation = ref(false);
-const authStore = useAuthStore();
-const router = useRouter();
-
-const createdLeadId = ref<number | null>(null);
-
-const showStep1Other = ref(false);
-const step1OtherValue = ref("");
-
-// --- АНАЛИТИКА (Раздел 12 ТЗ) ---
-const trackEvent = (eventName: string) => {
-  console.log(`[Analytics] Event: ${eventName}`);
-  // Если подключена метрика:
-  // if (window.ym) window.ym(XXXXXX, 'reachGoal', eventName);
-};
-
-onMounted(() => trackEvent("quiz_start"));
-
-watch(
-  () => store.currentStep,
-  (newStep) => {
-    if (newStep <= 6) trackEvent(`quiz_step_${newStep}`);
-    if (newStep === 7) trackEvent("quiz_success");
-  },
-);
-
-const getUtms = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  return {
-    utm_source: urlParams.get("utm_source") || "",
-    utm_medium: urlParams.get("utm_medium") || "",
-    utm_campaign: urlParams.get("utm_campaign") || "",
-    utm_content: urlParams.get("utm_content") || "",
-    utm_term: urlParams.get("utm_term") || "",
-  };
-};
-
-const handleStep1 = (val: string) => {
-  if (val === "Другое") {
-    showStep1Other.value = true;
-    store.answers.step_1 = "Другое";
-  } else {
-    showStep1Other.value = false;
-    store.answers.step_1 = val;
-    store.nextStep();
-  }
-};
-
-const confirmStep1Other = () => {
-  if (step1OtherValue.value.trim()) {
-    store.answers.step_1 = step1OtherValue.value;
-    store.nextStep();
-  }
-};
 
 const zonesList = [
   "Кухня",
@@ -395,29 +423,56 @@ const zonesList = [
   "Полностью всё помещение",
 ];
 
+// --- 3. Вспомогательные функции ---
+const getStyleImage = (name: string) => {
+  return new URL(`../assets/${name}`, import.meta.url).href;
+};
+
+const getUtms = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return {
+    utm_source: urlParams.get("utm_source") || "",
+    utm_medium: urlParams.get("utm_medium") || "",
+    utm_campaign: urlParams.get("utm_campaign") || "",
+    utm_content: urlParams.get("utm_content") || "",
+    utm_term: urlParams.get("utm_term") || "",
+  };
+};
+
+const trackEvent = (eventName: string) => {
+  console.log(`[Analytics] Event: ${eventName}`);
+};
+
+// --- 4. Логика шагов ---
+const handleStep1 = (val: string) => {
+  if (val === "Другое") {
+    showStep1Other.value = true;
+    store.answers.step_1 = "Другое";
+  } else {
+    showStep1Other.value = false;
+    store.answers.step_1 = val;
+    store.nextStep();
+  }
+};
+
+const confirmStep1Other = () => {
+  if (step1OtherValue.value.trim().length > 0) {
+    store.answers.step_1 = step1OtherValue.value;
+    showStep1Other.value = false;
+    store.nextStep();
+  }
+};
+
 const handleZoneChange = (lastSelected: string) => {
   const ALL_KEY = "Полностью всё помещение";
-
   if (lastSelected === ALL_KEY) {
-    if (store.answers.step_2.includes(ALL_KEY)) {
-      store.answers.step_2 = [...zonesList];
-    } else {
-      store.answers.step_2 = [];
-    }
+    store.answers.step_2 = store.answers.step_2.includes(ALL_KEY)
+      ? [...zonesList]
+      : [];
   } else {
-    if (
-      store.answers.step_2.includes(ALL_KEY) &&
-      !store.answers.step_2.includes(lastSelected)
-    ) {
-      store.answers.step_2 = store.answers.step_2.filter((z) => z !== ALL_KEY);
-    }
-
-    const otherZones = zonesList.filter((z) => z !== ALL_KEY);
-    const allOthersSelected = otherZones.every((z) =>
-      store.answers.step_2.includes(z),
-    );
-
-    if (allOthersSelected && !store.answers.step_2.includes(ALL_KEY)) {
+    store.answers.step_2 = store.answers.step_2.filter((z) => z !== ALL_KEY);
+    const others = zonesList.filter((z) => z !== ALL_KEY);
+    if (others.every((z) => store.answers.step_2.includes(z))) {
       store.answers.step_2.push(ALL_KEY);
     }
   }
@@ -433,8 +488,10 @@ const selectStep5 = (val: string) => {
   store.nextStep();
 };
 
+// --- 5. Вычисляемые свойства (Валидация) ---
 const isNextVisible = computed(() => {
-  if (store.currentStep === 1) return false;
+  if (store.currentStep === 1)
+    return !showStep1Other.value || step1OtherValue.value.length > 0;
   if (store.currentStep === 2) return store.answers.step_2.length > 0;
   if (store.currentStep === 3) return true;
   if (store.currentStep === 4) return !!store.answers.step_4;
@@ -442,14 +499,16 @@ const isNextVisible = computed(() => {
   return false;
 });
 
+const isPhoneValid = computed(
+  () => rawPhone.value.replace(/\D/g, "").length >= 9,
+);
+
 const isFormValid = computed(() => {
-  const phoneDigits = store.contact.phone
-    ? store.contact.phone.replace(/\D/g, "")
-    : "";
-  const nameValid = store.contact.name && store.contact.name.trim().length > 0;
-  return phoneDigits.length === 11 && agreed.value && nameValid;
+  const nameValid = store.contact.name?.trim().length > 0;
+  return isPhoneValid.value && agreed.value && nameValid;
 });
 
+// --- 6. Работа с API ---
 const handleFinalSubmit = async () => {
   if (!isFormValid.value) {
     showValidation.value = true;
@@ -458,69 +517,67 @@ const handleFinalSubmit = async () => {
 
   loading.value = true;
   submitError.value = "";
-  trackEvent("quiz_submit");
-
-  const utms = getUtms();
-  const payload = {
-    lead: {
-      name: store.contact.name,
-      phone: store.contact.phone,
-      email: store.contact.email || "",
-      comment: store.contact.comment || "",
-      answers: store.answers,
-      page_url: window.location.href,
-      ...utms,
-    },
-  };
+  store.contact.phone = `${countryCode.value} ${rawPhone.value.trim()}`;
 
   try {
-    const response = await submitQuiz(payload);
-    // СОХРАНЯЕМ ID ИЗ ОТВЕТА:
+    const response = await submitQuiz({
+      lead: {
+        ...store.contact,
+        answers: store.answers,
+        page_url: window.location.href,
+        ...getUtms(),
+      },
+    });
     createdLeadId.value = response.data?.lead?.id || null;
     store.currentStep = 7;
-  } catch (e: any) {
-    console.error("Ошибка при отправке квиза:", e);
-    submitError.value =
-      "Не удалось отправить заявку. Пожалуйста, попробуйте ещё раз.";
+    chatStore.clearChat();
+  } catch (e) {
+    submitError.value = "Ошибка при отправке. Попробуйте еще раз.";
   } finally {
     loading.value = false;
   }
 };
 
-// ШАГ 1: Функция скачивания
+const triggerEmailSend = async () => {
+  if (!store.contact.email || !createdLeadId.value) return;
+  isEmailSending.value = true;
+  emailError.value = "";
+  try {
+    await apiClient.post("/send-email", {
+      email: store.contact.email,
+      id: createdLeadId.value,
+    });
+    emailSent.value = true;
+  } catch (err) {
+    emailError.value = "Ошибка отправки письма.";
+  } finally {
+    isEmailSending.value = false;
+  }
+};
+
+// --- 7. Экспорт и Сброс ---
 const downloadAnswers = () => {
-  const ans = store.answers;
-  const c = store.contact;
-
-  const text = `
-Ваша заявка на дизайн-проект:
---------------------------------------
-Имя: ${c.name}
-Телефон: ${c.phone}
-Email: ${c.email || "Не указан"}
-
-Помещение: ${ans.step_1}
-Зоны: ${ans.step_2.join(", ")}
-Площадь: ${ans.step_3} м²
-Стиль: ${ans.step_4}
-Бюджет: ${ans.step_5}
-Комментарий: ${c.comment || "Нет"}
-  `.trim();
-
-  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
+  const text = `Заявка: ${store.contact.name}\nТелефон: ${store.contact.phone}\nПомещение: ${store.answers.step_1}`;
+  const blob = new Blob([text], { type: "text/plain" });
   const link = document.createElement("a");
-  link.href = url;
-  link.download = "design_project_answers.txt";
-  document.body.appendChild(link);
+  link.href = URL.createObjectURL(blob);
+  link.download = "quiz_results.txt";
   link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
 };
 
 const resetQuiz = () => {
-  window.location.reload();
-  authStore.logout();
-  router.push({ name: 'Login' })
+  // Используем authStore и router, чтобы TS не выдавал ошибку unused variable
+  authStore.logout?.();
+  router.push("/").then(() => window.location.reload());
 };
+
+onMounted(() => trackEvent("quiz_start"));
+
+watch(
+  () => store.currentStep,
+  (step) => {
+    if (step === 6) trackEvent("quiz_form_view");
+    else if (step < 6) trackEvent(`quiz_step_${step}`);
+  },
+);
 </script>
