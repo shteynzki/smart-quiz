@@ -1,14 +1,12 @@
 class ApplicationController < ActionController::API
   include Pagy::Backend
 
-  # Перехватываем все стандартные ошибки
   rescue_from StandardError, with: :handle_standard_error
   rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
 
   private
 
   def handle_standard_error(e)
-    # Пишем подробности в лог сервера
     Rails.logger.error "[API_ERROR] #{e.class}: #{e.message}\n#{e.backtrace.first(10).join("\n")}"
 
     render json: {
