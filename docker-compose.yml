@@ -14,11 +14,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  
-  # redis:
-  #   image: redis:alpine
-  #   ports:
-  #     - "${REDIS_PORT:-6379}:6379"
 
   backend:
     build:
