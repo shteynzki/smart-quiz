@@ -6,7 +6,13 @@ RSpec.describe LeadMailer, type: :mailer do
       Lead.create!(
         name: 'Хакатон',
         phone: '+79001234567',
-        answers: { 'step_2' => [ 'Кухня' ] }
+        answers: {
+          'step_1' => 'Квартира',
+          'step_2' => [ 'Кухня' ],
+          'step_3' => 85,
+          'step_4' => 'Минимализм',
+          'step_5' => '1 000 000 - 2 000 000 ₽'
+        }
       )
     end
     let(:mail) { LeadMailer.new_lead_email(lead) }
