@@ -2,7 +2,7 @@ require 'swagger_helper'
 
 RSpec.describe 'api/v1/leads', type: :request do
   api_base = ENV.fetch("RAILS_API", "/api/v1")
-  path '#{api_base}/leads' do
+  path "#{api_base}/leads" do
     post('Отправить заявку на дизайн-проект (Квиз)') do
       tags 'Заявки (Leads)'
       consumes 'application/json'
