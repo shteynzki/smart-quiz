@@ -30,6 +30,9 @@ paths:
                     phone:
                       type: string
                       example: "+7 (900) 000-00-00"
+                    consent:
+                      type: boolean
+                      example: true
                     email:
                       type: string
                       example: example@mail.ru
@@ -70,8 +73,12 @@ paths:
                   required:
                   - name
                   - phone
+                  - consent
                   - answers
               required:
               - lead
 servers:
-- url: http://127.0.0.1
+- url: https://{defaultHost}
+  variables:
+    defaultHost:
+      default: www.example.com

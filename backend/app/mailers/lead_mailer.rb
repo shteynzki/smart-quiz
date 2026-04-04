@@ -1,5 +1,4 @@
 class LeadMailer < ApplicationMailer
-  # ENV.fetch возьмет email из .env, а если его там нет — подставит admin@example.com
   default to: -> { ENV.fetch("MANAGER_EMAIL", "manager@example.ru") }
 
   def new_lead_email(lead)

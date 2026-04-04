@@ -24,6 +24,7 @@ services:
       DATABASE_URL: postgresql://${DB_USERNAME:-pguser}:${DB_PASSWORD:-pgpass}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-pgdb}
       RAILS_ENV: ${RAILS_ENV:-development}
       RAILS_GROUPS: ${RAILS_GROUPS:-assets}
+      RAILS_API: ${RAILS_API:-/api/v1}
       DB_USER: ${DB_USERNAME:-pguser}
       DB_PASSWORD: ${DB_PASSWORD:-pgpass}
       DB_NAME: ${DB_NAME:-pgdb}
