@@ -1,8 +1,18 @@
+.quiz-app-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f4f7f6;
+  padding: 20px;
+}
+
 .progress-info {
+  font-family: "Montserrat", sans-serif;
   font-size: 0.9rem;
   color: #718096;
   margin-bottom: 8px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .progress-bar {
@@ -22,17 +32,19 @@
 /* Контейнер квиза */
 .quiz-container {
   max-width: 650px;
-  margin: 2rem auto;
+  width: 100%;
+  margin: 0;
   padding: 2.5rem;
   background: var(--white);
   border-radius: 12px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.07);
-  border: 1px solid var(--border);
-  min-height: 560px;
+
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
+  min-height: 600px;
+  justify-content: space-between;
 }
+
 .quiz-content {
   flex-grow: 1;
   display: flex;
@@ -43,10 +55,13 @@
 }
 
 .quiz-container h2 {
+  font-family: "Montserrat", sans-serif;
   color: var(--text-h);
-  font-size: 1.5rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   margin-bottom: 1.5rem;
-  line-height: 1.3;
+  line-height: 1.2;
   text-align: center;
   width: 100%;
   display: block;
@@ -57,7 +72,10 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 15px;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .card-option {
@@ -97,8 +115,9 @@
 }
 
 .card-text {
+  font-family: "Montserrat", sans-serif;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text);
 }
 
@@ -168,13 +187,13 @@
 }
 
 .input-field {
+  font-family: "Montserrat", sans-serif;
   width: 100%;
   box-sizing: border-box;
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 1rem;
-  font-family: inherit;
   transition: border-color 0.2s ease;
 }
 
@@ -189,6 +208,7 @@ textarea.input-field {
 }
 
 .checkbox-item {
+  font-family: "Montserrat", sans-serif;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -198,35 +218,29 @@ textarea.input-field {
   margin-top: 5px;
 }
 
-/* Кнопка "Получить консультацию" */
 .btn-submit {
+  font-family: "Montserrat", sans-serif;
   position: relative;
   overflow: hidden;
-
-  /* Цветовая схема: зеленый */
-  background-color: #27ae60; /* Насыщенный зеленый */
+  background-color: #27ae60;
   color: white;
-
-  /* Размеры как у полей ввода */
   width: 100%;
-  height: 54px; /* Убедись, что у .input-field такая же высота или используй padding */
+  height: 54px;
   padding: 0 20px;
-
   border: none;
   border-radius: 8px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s ease;
-
-  /* Центрирование текста */
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 10px;
 }
 
-/* Эффект блика (Shimmer) */
 .btn-submit::after {
   content: "";
   position: absolute;
@@ -244,14 +258,12 @@ textarea.input-field {
   animation: shimmer 3s infinite;
 }
 
-/* Состояние при наведении */
 .btn-submit:hover:not(.btn-disabled) {
-  background-color: #219150; /* Чуть темнее при наведении */
+  background-color: #219150;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
 }
 
-/* Состояние когда кнопка отключена */
 .btn-disabled {
   background-color: #bdc3c7 !important;
   cursor: not-allowed;
@@ -259,7 +271,6 @@ textarea.input-field {
   box-shadow: none !important;
 }
 
-/* Анимация блика */
 @keyframes shimmer {
   0% {
     left: -150%;
@@ -272,7 +283,6 @@ textarea.input-field {
   }
 }
 
-/* Кнопки навигации и подвал */
 .quiz-footer {
   display: flex;
   justify-content: space-between;
@@ -281,11 +291,12 @@ textarea.input-field {
 }
 
 .btn-nav {
+  font-family: "Montserrat", sans-serif; /* Добавлено */
   padding: 12px 25px;
   border: 1px solid var(--border);
   background: #edf2f7;
   color: #4a5568;
-  font-weight: 600;
+  font-weight: 700;
   border-radius: 6px;
   flex: 1;
 }
@@ -308,6 +319,7 @@ textarea.input-field {
 }
 
 .validation-hint {
+  font-family: "Montserrat", sans-serif;
   color: #e53e3e;
   font-size: 0.85rem;
   margin-top: 15px;
@@ -324,12 +336,15 @@ textarea.input-field {
 }
 
 .step-content h2 {
+  font-family: "Montserrat", sans-serif;
   min-height: 3em;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .slider-container {
@@ -348,10 +363,12 @@ textarea.input-field {
 }
 
 .area-display {
+  font-family: "Montserrat", sans-serif;
   display: inline-block;
-  min-width: 80px; /* Фиксируем ширину под цифры */
+  min-width: 80px;
   color: var(--primary);
   font-weight: 800;
+  font-size: 1.8rem;
 }
 
 @keyframes fadeIn {
@@ -376,9 +393,6 @@ textarea.input-field {
   }
 }
 
-/* --- СТИЛИ ЭКРАНА УСПЕХА --- */
-
-/* Контейнер экрана успеха (центрирование контента) */
 .success-screen {
   display: flex;
   flex-direction: column;
@@ -393,13 +407,12 @@ textarea.input-field {
   margin-bottom: 1rem;
 }
 
-/* Карточка сохранения результатов */
 .save-results-card {
   width: 100%;
   max-width: 440px;
   margin: 2rem auto;
   padding: 1.5rem;
-  background: #f8fafc; /* Светлый фон как на скриншоте */
+  background: #f8fafc;
   border: 1px solid var(--border);
   border-radius: 12px;
   text-align: left;
@@ -407,23 +420,23 @@ textarea.input-field {
 }
 
 .save-results-card h3 {
+  font-family: "Montserrat", sans-serif;
   margin: 0 0 1.2rem 0;
-  font-size: 1.15rem;
-  color: var(--primary); /* Используем основной цвет для заголовка */
-  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--primary);
+  font-weight: 800;
   display: block;
-  min-height: auto; /* Сбрасываем высоту из h2 */
+  min-height: auto;
 }
 
-/* Группа кнопок в карточке */
 .save-actions-group {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* Общий стиль для кнопок сохранения */
 .btn-option {
+  font-family: "Montserrat", sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -431,7 +444,7 @@ textarea.input-field {
   width: 100%;
   padding: 14px;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -447,7 +460,6 @@ textarea.input-field {
   border-color: var(--primary);
 }
 
-/* Специфичные стили для кнопок */
 .btn-telegram {
   background-color: #2aabee !important;
   color: white !important;
@@ -459,47 +471,12 @@ textarea.input-field {
   color: #475569 !important;
 }
 
-.btn-email-trigger:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Статусы почты */
-.email-status-error {
-  color: #ef4444;
-  font-size: 0.85rem;
-  text-align: center;
-  margin-top: 10px;
-  font-weight: 500;
-}
-
-.email-status-success {
-  text-align: center;
-  color: #10b981;
-  background: #ecfdf5;
-  padding: 12px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-/* Нижняя кнопка сброса (большая синяя) */
 .btn-reset-quiz {
   margin-top: 1.5rem !important;
   max-width: 300px;
   width: 100%;
-}
-
-.login-card h1 {
-  color: var(--primary);
+  font-family: "Montserrat", sans-serif;
   font-weight: 700;
-}
-
-.card-icon-placeholder {
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .style-grid {
@@ -523,11 +500,10 @@ textarea.input-field {
   transform: translateY(-4px);
 }
 
-/* Контейнер картинки */
 .style-image-container {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 5; /* Пропорции как на фото */
+  aspect-ratio: 4 / 5;
   border-radius: 16px;
   overflow: hidden;
   border: 3px solid transparent;
@@ -535,9 +511,8 @@ textarea.input-field {
   background: #f7fafc;
 }
 
-/* Состояние когда выбрано (фиолетовая обводка как на фото) */
 .style-card.active .style-image-container {
-  border-color: #3b82f6; /* Фиолетовый цвет из примера */
+  border-color: #3b82f6;
   box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
 }
 
@@ -547,7 +522,6 @@ textarea.input-field {
   object-fit: cover;
 }
 
-/* Круглая галочка снизу (как на фото) */
 .style-check-badge {
   position: absolute;
   bottom: 12px;
@@ -564,53 +538,16 @@ textarea.input-field {
   color: white;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   z-index: 2;
-  animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.style-card.active .style-label {
-  color: #3b82f6;
-}
-
-@keyframes scaleIn {
-  from {
-    transform: translateX(-50%) scale(0);
-  }
-  to {
-    transform: translateX(-50%) scale(1);
-  }
 }
 
 .style-label {
+  font-family: "Montserrat", sans-serif;
   margin-top: 12px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #2d3748;
   text-align: left;
   padding-left: 5px;
-}
-
-@media (max-width: 480px) {
-  .style-grid {
-    gap: 12px;
-  }
-  .style-label {
-    font-size: 0.9rem;
-  }
-
-  .card-option {
-    flex: 0 1 45%;
-  }
-
-  .style-card {
-    flex: 0 1 100%;
-    max-width: 300px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .quiz-container {
-    max-width: 700px;
-    margin: 3rem auto;
-  }
 }
 
 @media (max-width: 1023px) {
@@ -618,100 +555,89 @@ textarea.input-field {
     max-width: 90%;
     padding: 2rem;
   }
-
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 150px));
-    gap: 20px;
-    justify-content: center;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .quiz-container h2 {
-    color: var(--text-h);
-    font-size: 1.6rem;
-    margin-bottom: 2rem;
-    line-height: 1.3;
-    text-align: center;
-    display: block;
-    width: 100%;
-  }
 }
 
 @media (max-width: 767px) {
-  .quiz-container {
-    padding: 1.5rem;
-    margin: 1rem auto;
-    min-height: auto;
+  .quiz-app-wrapper {
+    align-items: flex-start;
+    padding: 10px;
   }
 
-  .card-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .quiz-container {
+    padding: 1.2rem;
+    margin: 10px auto;
+    min-height: auto;
+    width: 100%;
   }
 
   .quiz-container h2 {
     font-size: 1.2rem;
     min-height: auto;
-    margin-bottom: 1.2rem;
-  }
-}
-
-@media (max-width: 375px) {
-  .quiz-container {
-    padding: 1.2rem;
-    border-radius: 0;
-    box-shadow: none;
-    border: none;
+    margin-bottom: 1.5rem;
   }
 
+  .card-grid,
   .style-grid {
-    gap: 10px;
-  }
-
-  .style-label {
-    font-size: 0.9rem;
-  }
-
-  .btn-nav {
-    padding: 10px 15px;
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 320px) {
-  .quiz-container {
-    padding: 1rem;
-  }
-
-  .quiz-container h2 {
-    font-size: 1.1rem;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
   }
 
   .card-option {
-    padding: 12px 8px;
-    min-height: 90px;
-  }
-
-  .card-text {
-    font-size: 0.8rem;
+    flex: 0 0 auto !important;
+    width: 100%;
+    max-width: 400px;
+    min-height: 70px;
+    padding: 12px 15px;
+    flex-direction: row !important;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 15px;
   }
 
   .card-icon-placeholder {
-    font-size: 1.4rem;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0 !important;
+    font-size: 1.5rem;
+    width: 30px;
+    text-align: center;
   }
 
-  .style-label {
+  .card-text {
+    font-size: 0.95rem;
+    text-align: left;
+  }
+
+  .checkbox-indicator {
+    position: static;
+    margin-left: auto;
+  }
+
+  .style-card {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .style-image-container {
+    aspect-ratio: 16 / 9;
+  }
+
+  .area-display {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 350px) {
+  .quiz-container {
+    padding: 1rem;
+  }
+  .card-text {
     font-size: 0.85rem;
   }
-
-  .style-check-badge {
-    width: 24px;
-    height: 24px;
-  }
-
-  .quiz-footer {
-    gap: 8px;
+  .card-option {
+    padding: 10px;
+    gap: 10px;
   }
 }
