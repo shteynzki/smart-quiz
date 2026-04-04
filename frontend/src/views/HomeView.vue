@@ -569,13 +569,29 @@ const triggerEmailSend = async () => {
   }
 };
 
-// --- 7. Экспорт и Сброс ---
-const downloadAnswers = () => {
-  const text = `Заявка: ${store.contact.name}\nТелефон: ${store.contact.phone}\nПомещение: ${store.answers.step_1}`;
-  const blob = new Blob([text], { type: "text/plain" });
+onst downloadAnswers = () => {
+  // Формируем красивый текст из всех данных стора
+  const summary = `
+Ваша заявка на дизайн-проект:
+--------------------------------------
+Имя: ${store.contact.name}
+Телефон: ${store.contact.phone}
+Email: ${store.contact.email || 'не указан'}
+
+Помещение: ${store.answers.step_1}
+Зоны: ${Array.isArray(store.answers.step_2) ? store.answers.step_2.join(', ') : store.answers.step_2}
+Площадь: ${store.answers.step_3} м²
+Стиль: ${store.answers.step_4}
+Бюджет: ${store.answers.step_5}
+Комментарий: ${store.contact.comment || 'нет'}
+--------------------------------------
+Дата: ${new Date().toLocaleString()}
+  `.trim();
+
+  const blob = new Blob([summary], { type: "text/plain" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "quiz_results.txt";
+  link.download = `Заявка_${store.contact.name}.txt`;
   link.click();
 };
 
