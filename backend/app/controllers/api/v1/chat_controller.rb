@@ -1,0 +1,39 @@
+class Api::V1::ChatController < ApplicationController
+  skip_before_action :verify_authenticity_token, raise: false
+
+  def create
+    client = OpenAI::Client.new(
+      access_token: ENV.fetch("NVIDIA_API_KEY"),
+      uri_base: "https://integrate.api.nvidia.com/v1",
+      request_timeout: 60
+    )
+
+    # Важно: используем .to_unsafe_h или разрешаем параметры, если Rails ругается
+    messages = params[:messages].map do |msg|
+      { role: msg[:role], content: msg[:content] }
+    end
+
+    response = client.chat(
+      parameters: {
+        model: ENV.fetch("NVIDIA_MODEL", "nvidia/nemotron-3-super-120b-a12b"),
+        messages: messages,
+        temperature: 0.5,
+        max_tokens: 1024,
+        top_p: 1
+      }
+    )
+
+    # ИСПРАВЛЕНИЕ ЗДЕСЬ: Проверяем наличие ключа 'choices', так как response — это Hash
+    if response && response["choices"]
+      ai_message = response.dig("choices", 0, "message", "content")
+      render json: { message: ai_message }
+    else
+      # Если есть ошибка в ключе 'error', выводим её в лог
+      Rails.logger.error "NVIDIA Error Detail: #{response['error'] || 'Unknown error'}"
+      render json: { error: "Нейросеть временно недоступна" }, status: :service_unavailable
+    end
+  rescue StandardError => e
+    Rails.logger.error "Chat Error: #{e.message}"
+    render json: { error: "Внутренняя ошибка сервера" }, status: :internal_server_error
+  end
+end
