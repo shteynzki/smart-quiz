@@ -62,13 +62,16 @@ jobs:
         run: bundle exec rspec
 
       - name: Run RuboCop
-        run: bin/rubocop -a
+        run: bin/rubocop
 
       - name: Run Brakeman
         run: bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error
 
       - name: Run Bundler Audit
         run: bin/bundler-audit --update
+
+      - name: Build backend Docker image
+        run: docker build -f Dockerfile.dev -t smart-quiz-backend-ci .
 
   frontend:
     name: Frontend
@@ -96,3 +99,6 @@ jobs:
         env:
           VITE_API_BASE_URL: /api/v1
         run: npm run build
+
+      - name: Build frontend Docker image
+        run: docker build -f Dockerfile -t smart-quiz-frontend-ci .

@@ -3,15 +3,15 @@ source "https://rubygems.org"
 gem "rails", "~> 8.1.3" # rails
 gem "pg", "~> 1.1" # postgresql db
 gem "puma", ">= 5.0" # puma wev-server
-#gem "jbuilder" # build JSON API
+# gem "jbuilder" # build JSON API
 gem "rswag", "~> 2.15"
 gem "csv"
-#gem "jwt", "~> 2.9"
-#gem "bcrypt", "~> 3.1.7" # for crypt passwords
-#gem "rspec"
+# gem "jwt", "~> 2.9"
+# gem "bcrypt", "~> 3.1.7" # for crypt passwords
+# gem "rspec"
 gem "brakeman"
 
-#gem "image_processing", "~> 1.2" # для загрузки изображений
+# gem "image_processing", "~> 1.2" # для загрузки изображений
 
 gem "rack-cors" # add cors
 gem "rack-attack", "~> 6.7"
