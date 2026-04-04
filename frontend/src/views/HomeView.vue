@@ -52,18 +52,7 @@
         <h2>Какие зоны нужно включить в проект?</h2>
         <div class="options-grid card-grid">
           <label
-            v-for="zone in [
-              'Кухня',
-              'Гостиная',
-              'Спальня',
-              'Детская',
-              'Санузел',
-              'Прихожая',
-              'Кабинет',
-              'Гардеробная',
-              'Балкон / лоджия',
-              'Полностью всё помещение',
-            ]"
+            v-for="zone in zonesList"
             :key="zone"
             class="card-option"
             :class="{
@@ -86,7 +75,6 @@
           </label>
         </div>
       </div>
-
       <!-- ШАГ 3: Площадь -->
       <div v-if="store.currentStep === 3" class="step-content">
         <h2>
@@ -299,12 +287,44 @@ const confirmStep1Other = () => {
   }
 };
 
+const zonesList = [
+  "Кухня",
+  "Гостиная",
+  "Спальня",
+  "Детская",
+  "Санузел",
+  "Прихожая",
+  "Кабинет",
+  "Гардеробная",
+  "Балкон / лоджия",
+  "Полностью всё помещение",
+];
+
 const handleZoneChange = (lastSelected: string) => {
   const ALL_KEY = "Полностью всё помещение";
+
   if (lastSelected === ALL_KEY) {
-    store.answers.step_2 = [ALL_KEY];
+    if (store.answers.step_2.includes(ALL_KEY)) {
+      store.answers.step_2 = [...zonesList];
+    } else {
+      store.answers.step_2 = [];
+    }
   } else {
-    store.answers.step_2 = store.answers.step_2.filter((z) => z !== ALL_KEY);
+    if (
+      store.answers.step_2.includes(ALL_KEY) &&
+      !store.answers.step_2.includes(lastSelected)
+    ) {
+      store.answers.step_2 = store.answers.step_2.filter((z) => z !== ALL_KEY);
+    }
+
+    const otherZones = zonesList.filter((z) => z !== ALL_KEY);
+    const allOthersSelected = otherZones.every((z) =>
+      store.answers.step_2.includes(z),
+    );
+
+    if (allOthersSelected && !store.answers.step_2.includes(ALL_KEY)) {
+      store.answers.step_2.push(ALL_KEY);
+    }
   }
 };
 
