@@ -91,28 +91,31 @@
         />
       </div>
 
-      <!-- ШАГ 4: Стиль (Интерактивные карточки) -->
       <div v-if="store.currentStep === 4" class="step-content">
         <h2>Какой стиль интерьера вам ближе?</h2>
-        <div class="options-grid card-grid">
-          <label
-            v-for="opt in [
-              'Современный',
-              'Минимализм',
-              'Неоклассика',
-              'Скандинавский',
-              'Лофт',
-              'Классика',
-              'Пока не определился',
-            ]"
-            :key="opt"
-            class="card-option"
-            :class="{ active: store.answers.step_4 === opt }"
-            @click="selectStep4(opt)"
+        <div class="style-grid">
+          <div
+            v-for="style in styleOptions"
+            :key="style.name"
+            class="style-card"
+            :class="{ active: store.answers.step_4 === style.name }"
+            @click="selectStep4(style.name)"
           >
-            <div class="card-icon-placeholder"><IconBox /></div>
-            <span class="card-text">{{ opt }}</span>
-          </label>
+            <div class="style-image-container">
+              <img
+                :src="getStyleImage(style.image)"
+                :alt="style.name"
+                class="style-image"
+              />
+              <div
+                class="style-check-badge"
+                v-if="store.answers.step_4 === style.name"
+              >
+                <IconCheck />
+              </div>
+            </div>
+            <span class="style-label">{{ style.name }}</span>
+          </div>
         </div>
       </div>
 
@@ -231,6 +234,20 @@ import { ref, computed, watch, onMounted } from "vue";
 import { useQuizStore } from "@/stores/useQuizStore";
 import { submitQuiz } from "@/api/projects";
 import "@/assets/quiz.css";
+
+const styleOptions = [
+  { name: "Современный", image: "modern.png" },
+  { name: "Минимализм", image: "contemporary.png" },
+  { name: "Неоклассика", image: "neoclass.png" },
+  { name: "Скандинавский", image: "scandinav.png" },
+  { name: "Лофт", image: "loft.png" },
+  { name: "Классика", image: "classical.png" },
+  { name: "Пока не определился", image: "login.png" },
+];
+
+const getStyleImage = (name: string) => {
+  return new URL(`../assets/${name}`, import.meta.url).href;
+};
 
 const store = useQuizStore();
 const loading = ref(false);
