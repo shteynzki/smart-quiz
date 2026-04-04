@@ -91,28 +91,31 @@
         />
       </div>
 
-      <!-- ШАГ 4: Стиль (Интерактивные карточки) -->
       <div v-if="store.currentStep === 4" class="step-content">
         <h2>Какой стиль интерьера вам ближе?</h2>
-        <div class="options-grid card-grid">
-          <label
-            v-for="opt in [
-              'Современный',
-              'Минимализм',
-              'Неоклассика',
-              'Скандинавский',
-              'Лофт',
-              'Классика',
-              'Пока не определился',
-            ]"
-            :key="opt"
-            class="card-option"
-            :class="{ active: store.answers.step_4 === opt }"
-            @click="selectStep4(opt)"
+        <div class="style-grid">
+          <div
+            v-for="style in styleOptions"
+            :key="style.name"
+            class="style-card"
+            :class="{ active: store.answers.step_4 === style.name }"
+            @click="selectStep4(style.name)"
           >
-            <div class="card-icon-placeholder"><IconBox /></div>
-            <span class="card-text">{{ opt }}</span>
-          </label>
+            <div class="style-image-container">
+              <img
+                :src="getStyleImage(style.image)"
+                :alt="style.name"
+                class="style-image"
+              />
+              <div
+                class="style-check-badge"
+                v-if="store.answers.step_4 === style.name"
+              >
+                <IconCheck />
+              </div>
+            </div>
+            <span class="style-label">{{ style.name }}</span>
+          </div>
         </div>
       </div>
 
@@ -199,6 +202,78 @@
           <div class="success-icon">🎉</div>
           <h2>Спасибо, {{ store.contact.name }}!</h2>
           <p>Ваша заявка принята. Мы свяжемся с вами в ближайшее время.</p>
+
+          <!-- КАРТОЧКА СОХРАНЕНИЯ -->
+          <div
+            class="save-results-card"
+            style="
+              margin: 30px auto;
+              max-width: 400px;
+              padding: 20px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              text-align: left;
+            "
+          >
+            <h3 style="margin-top: 0; font-size: 1.1rem; color: var(--primary)">
+              Сохранить копию ответов:
+            </h3>
+
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 15px;
+              "
+            >
+              <button
+                @click="downloadAnswers"
+                class="btn-option"
+                style="
+                  margin: 0;
+                  justify-content: center;
+                  background: var(--white);
+                "
+              >
+                💾 Скачать текстовый файл
+              </button>
+
+              <a
+                v-if="createdLeadId"
+                :href="`https://t.me/my_smart_quiz_bot?start=${createdLeadId}`"
+                target="_blank"
+                class="btn-option"
+                style="
+                  margin: 0;
+                  text-decoration: none;
+                  text-align: center;
+                  background-color: #2aabee;
+                  color: white;
+                  border-color: #2aabee;
+                  justify-content: center;
+                "
+              >
+                ✈️ Получить в Telegram
+              </a>
+
+              <div
+                v-if="store.contact.email"
+                style="
+                  text-align: center;
+                  color: var(--text);
+                  font-size: 0.9rem;
+                  margin-top: 10px;
+                "
+              >
+                ✉️ Копия автоматически отправлена на <br /><b>{{
+                  store.contact.email
+                }}</b>
+              </div>
+            </div>
+          </div>
+
           <button
             @click="resetQuiz"
             class="btn-nav btn-next"
@@ -234,6 +309,20 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useRouter } from 'vue-router';
 import "@/assets/quiz.css";
 
+const styleOptions = [
+  { name: "Современный", image: "modern.png" },
+  { name: "Минимализм", image: "contemporary.png" },
+  { name: "Неоклассика", image: "neoclass.png" },
+  { name: "Скандинавский", image: "scandinav.png" },
+  { name: "Лофт", image: "loft.png" },
+  { name: "Классика", image: "classical.png" },
+  { name: "Пока не определился", image: "login.png" },
+];
+
+const getStyleImage = (name: string) => {
+  return new URL(`../assets/${name}`, import.meta.url).href;
+};
+
 const store = useQuizStore();
 const loading = ref(false);
 const agreed = ref(false);
@@ -241,6 +330,8 @@ const submitError = ref("");
 const showValidation = ref(false);
 const authStore = useAuthStore();
 const router = useRouter();
+
+const createdLeadId = ref<number | null>(null);
 
 const showStep1Other = ref(false);
 const step1OtherValue = ref("");
@@ -383,8 +474,9 @@ const handleFinalSubmit = async () => {
   };
 
   try {
-    // Оставляем только один корректный вызов
-    await submitQuiz(payload);
+    const response = await submitQuiz(payload);
+    // СОХРАНЯЕМ ID ИЗ ОТВЕТА:
+    createdLeadId.value = response.data?.lead?.id || null;
     store.currentStep = 7;
   } catch (e: any) {
     console.error("Ошибка при отправке квиза:", e);
@@ -394,6 +486,38 @@ const handleFinalSubmit = async () => {
     loading.value = false;
   }
 };
+
+// ШАГ 1: Функция скачивания
+const downloadAnswers = () => {
+  const ans = store.answers;
+  const c = store.contact;
+
+  const text = `
+Ваша заявка на дизайн-проект:
+--------------------------------------
+Имя: ${c.name}
+Телефон: ${c.phone}
+Email: ${c.email || "Не указан"}
+
+Помещение: ${ans.step_1}
+Зоны: ${ans.step_2.join(", ")}
+Площадь: ${ans.step_3} м²
+Стиль: ${ans.step_4}
+Бюджет: ${ans.step_5}
+Комментарий: ${c.comment || "Нет"}
+  `.trim();
+
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "design_project_answers.txt";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
 const resetQuiz = () => {
   window.location.reload();
   authStore.logout();
