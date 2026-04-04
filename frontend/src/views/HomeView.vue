@@ -219,39 +219,11 @@
           <p>Ваша заявка принята. Мы свяжемся с вами в ближайшее время.</p>
 
           <!-- КАРТОЧКА СОХРАНЕНИЯ -->
-          <div
-            class="save-results-card"
-            style="
-              margin: 30px auto;
-              max-width: 400px;
-              padding: 20px;
-              background: var(--bg);
-              border: 1px solid var(--border);
-              border-radius: 8px;
-              text-align: left;
-            "
-          >
-            <h3 style="margin-top: 0; font-size: 1.1rem; color: var(--primary)">
-              Сохранить копию ответов:
-            </h3>
+          <div class="save-results-card">
+            <h3>Сохранить копию ответов:</h3>
 
-            <div
-              style="
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-                margin-top: 15px;
-              "
-            >
-              <button
-                @click="downloadAnswers"
-                class="btn-option"
-                style="
-                  margin: 0;
-                  justify-content: center;
-                  background: var(--white);
-                "
-              >
+            <div class="save-actions-group">
+              <button @click="downloadAnswers" class="btn-option">
                 💾 Скачать текстовый файл
               </button>
 
@@ -259,41 +231,19 @@
                 v-if="createdLeadId"
                 :href="`https://t.me/my_smart_quiz_bot?start=${createdLeadId}`"
                 target="_blank"
-                class="btn-option"
-                style="
-                  margin: 0;
-                  text-decoration: none;
-                  text-align: center;
-                  background-color: #2aabee;
-                  color: white;
-                  border-color: #2aabee;
-                  justify-content: center;
-                "
+                class="btn-option btn-telegram"
               >
                 ✈️ Получить в Telegram
               </a>
 
-              <!-- Кнопка отправки на почту (появляется только если email не пустой) -->
               <div
                 v-if="store.contact.email && store.contact.email.includes('@')"
-                style="margin-top: 10px"
               >
-                <!-- Кнопка действия (скрывается после успешной отправки) -->
                 <button
                   v-if="!emailSent"
                   @click="triggerEmailSend"
                   :disabled="isEmailSending"
-                  class="btn-option"
-                  style="
-                    margin: 0;
-                    justify-content: center;
-                    background: #f3f4f6; /* Светло-серый фон для отличия */
-                    border: 1px solid #d1d5db;
-                    width: 100%;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                  "
-                  :style="isEmailSending ? 'opacity: 0.7;' : ''"
+                  class="btn-option btn-email-trigger"
                 >
                   <span v-if="!isEmailSending"
                     >📩 Подтвердить отправку на почту</span
@@ -301,43 +251,18 @@
                   <span v-else>⏳ Отправляем письмо...</span>
                 </button>
 
-                <!-- Сообщение об успехе -->
-                <div
-                  v-else
-                  style="
-                    text-align: center;
-                    color: #10b981;
-                    font-weight: 500;
-                    font-size: 0.95rem;
-                    padding: 10px;
-                    background: #ecfdf5;
-                    border-radius: 6px;
-                  "
-                >
+                <div v-else class="email-status-success">
                   ✅ Результаты отправлены на {{ store.contact.email }}
                 </div>
 
-                <!-- Текст ошибки, если что-то пошло не так -->
-                <p
-                  v-if="emailError"
-                  style="
-                    color: #ef4444;
-                    font-size: 0.8rem;
-                    text-align: center;
-                    margin-top: 5px;
-                  "
-                >
+                <p v-if="emailError" class="email-status-error">
                   {{ emailError }}
                 </p>
               </div>
             </div>
           </div>
 
-          <button
-            @click="resetQuiz"
-            class="btn-nav btn-next"
-            style="margin: 20px auto"
-          >
+          <button @click="resetQuiz" class="btn-nav btn-next btn-reset-quiz">
             Вернуться в начало
           </button>
         </div>
@@ -569,21 +494,21 @@ const triggerEmailSend = async () => {
   }
 };
 
-onst downloadAnswers = () => {
+const downloadAnswers = () => {
   // Формируем красивый текст из всех данных стора
   const summary = `
 Ваша заявка на дизайн-проект:
 --------------------------------------
 Имя: ${store.contact.name}
 Телефон: ${store.contact.phone}
-Email: ${store.contact.email || 'не указан'}
+Email: ${store.contact.email || "не указан"}
 
 Помещение: ${store.answers.step_1}
-Зоны: ${Array.isArray(store.answers.step_2) ? store.answers.step_2.join(', ') : store.answers.step_2}
+Зоны: ${Array.isArray(store.answers.step_2) ? store.answers.step_2.join(", ") : store.answers.step_2}
 Площадь: ${store.answers.step_3} м²
 Стиль: ${store.answers.step_4}
 Бюджет: ${store.answers.step_5}
-Комментарий: ${store.contact.comment || 'нет'}
+Комментарий: ${store.contact.comment || "нет"}
 --------------------------------------
 Дата: ${new Date().toLocaleString()}
   `.trim();
