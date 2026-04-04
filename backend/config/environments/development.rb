@@ -86,4 +86,6 @@ config.action_mailer.smtp_settings = {
     enable_starttls_auto: false,
     openssl_verify_mode:  'none'
   }
+  config.hosts << /.*\.ngrok-free\.dev/
+  config.hosts << /.*\.ngrok-free\.app/
 end
