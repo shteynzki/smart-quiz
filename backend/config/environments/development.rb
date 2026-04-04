@@ -79,12 +79,11 @@ Rails.application.configure do
 config.action_mailer.smtp_settings = {
     address:              'smtp.yandex.ru',
     port:                 465,
-    user_name:            'tkachyov.dmitriya@yandex.ru',
-    password:             'erqqoieyexwatfvi',
-    authentication:       :plain, # Сменили :login на :plain
+    user_name:            ENV.fetch('SMTP_USER', 'tkachyov.dmitriya@yandex.ru'),
+    password:             ENV.fetch('SMTP_PASSWORD', 'your_app_password'),
+    authentication:       :plain,
     ssl:                  true,
-    # tls: true,  # Закомментируй эту строку, если она была, оставляем только ssl: true
     enable_starttls_auto: false,
-    openssl_verify_mode:  'none' # Это уберет ошибки сертификатов внутри Docker
+    openssl_verify_mode:  'none'
   }
 end
