@@ -7,8 +7,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-pgdb}
     volumes:
       - ./data:/var/lib/postgresql/data
-    ports:
-      - "${DB_PORT:-5432}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pguser} -d ${POSTGRES_DB:-pgdb}"]
       interval: 10s
@@ -25,20 +23,20 @@ services:
     environment:  
       DATABASE_URL: postgresql://${DB_USERNAME:-pguser}:${DB_PASSWORD:-pgpass}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-pgdb}
       RAILS_ENV: ${RAILS_ENV:-development}
-      DB_HOST: ${DB_HOST:-postgres}
-      DB_USERNAME: ${DB_USERNAME:-pguser}
+      RAILS_GROUPS: ${RAILS_GROUPS:-assets}
+      DB_USER: ${DB_USERNAME:-pguser}
       DB_PASSWORD: ${DB_PASSWORD:-pgpass}
       DB_NAME: ${DB_NAME:-pgdb}
-      RAILS_GROUPS: ${RAILS_GROUPS:-assets}
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
-      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
-      MANAGER_EMAIL: ${MANAGER_EMAIL}
+      DB_HOST: ${DB_HOST:-postgres}
       SMTP_USER: ${SMTP_USER}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
       SMTP_PORT: ${SMTP_PORT}
-      VITE_API_BASE_URL: ${VITE_API_BASE_URL}
-
-
+      SMTP_ADDRESS: ${SMTP_ADDRESS}
+      MANAGER_EMAIL: ${MANAGER_EMAIL}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      LEADS_EXPORT_SECRET: ${LEADS_EXPORT_SECRET:-supersecret}
+      HOST: ${HOST:-http://localhost}
     ports:
       - "${BACK_PORT:-8000}:3000"
     volumes:
@@ -48,11 +46,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api/v1}
     depends_on:
       backend:
         condition: service_started
-    environment: 
-      VITE_API_BASE_URL: ${VITE_API_BASE_URL}
     ports:
       - "${FRONT_PORT:-3000}:80"
       
