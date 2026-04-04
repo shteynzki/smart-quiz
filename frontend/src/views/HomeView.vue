@@ -517,21 +517,35 @@ const handleFinalSubmit = async () => {
 
   loading.value = true;
   submitError.value = "";
+
+  // Собираем телефон
   store.contact.phone = `${countryCode.value} ${rawPhone.value.trim()}`;
 
+  // Формируем тот самый payload, которого не хватало
+  const payload = {
+    lead: {
+      ...store.contact,
+      answers: store.answers,
+      page_url: window.location.href,
+      ...getUtms(),
+    },
+  };
+
   try {
-    const response = await submitQuiz({
-      lead: {
-        ...store.contact,
-        answers: store.answers,
-        page_url: window.location.href,
-        ...getUtms(),
-      },
-    });
-    createdLeadId.value = response.data?.lead?.id || null;
-    store.currentStep = 7;
-    chatStore.clearChat();
-  } catch (e) {
+    const response = await submitQuiz(payload);
+
+    // Проверяем успешность (обычно 200 или 201)
+    if (response.status === 200 || response.status === 201) {
+      // КРИТИЧНО: сохраняем ID для Телеграма и Почты
+      createdLeadId.value =
+        response.data?.id || response.data?.lead?.id || null;
+
+      store.currentStep = 7;
+      chatStore.clearChat();
+      trackEvent("quiz_success");
+    }
+  } catch (e: any) {
+    console.error(e);
     submitError.value = "Ошибка при отправке. Попробуйте еще раз.";
   } finally {
     loading.value = false;
