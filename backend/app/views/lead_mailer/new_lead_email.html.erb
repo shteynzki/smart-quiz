@@ -5,11 +5,11 @@
 
 <h3>📋 Детали проекта:</h3>
 <ul>
-  <li><b>Тип помещения:</b> <%= @lead.answers['step_1'] || 'Не указано' %></li>
-  <li><b>Зоны:</b> <%= Array(@lead.answers['step_2']).join(', ').presence || 'Не выбраны' %></li>
-  <li><b>Площадь:</b> <%= @lead.answers['step_3'] %> м²</li>
-  <li><b>Стиль:</b> <%= @lead.answers['step_4'] || 'Не указан' %></li>
-  <li><b>Бюджет:</b> <%= @lead.answers['step_5'] || 'Не указан' %></li>
+  <li><b>Тип помещения:</b> <%= @lead.answers['room_type'] || 'Не указано' %></li>
+  <li><b>Зоны:</b> <%= Array(@lead.answers['zones']).join(', ').presence || 'Не выбраны' %></li>
+  <li><b>Площадь:</b> <%= @lead.answers['area'] %> м²</li>
+  <li><b>Стиль:</b> <%= @lead.answers['style'] || 'Не указан' %></li>
+  <li><b>Бюджет:</b> <%= @lead.answers['budget'] || 'Не указан' %></li>
 </ul>
 
 <p><b>💬 Комментарий:</b> <%= @lead.comment.presence || 'Нет' %></p>

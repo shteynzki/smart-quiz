@@ -20,6 +20,7 @@ Rails.application.configure do
 
   # Show full error reports.
   config.consider_all_requests_local = true
+
   config.cache_store = :null_store
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.
@@ -50,4 +51,10 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # Отключаем проверку хостов в тестах (чтобы Swagger работал)
+  config.middleware.remove ActionDispatch::HostAuthorization
+  
+  # Говорим Rails использовать тестовую очередь для Job'ов
+  config.active_job.queue_adapter = :test
 end

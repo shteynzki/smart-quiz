@@ -5,12 +5,11 @@ gem "pg", "~> 1.1" # postgresql db
 gem "puma", ">= 5.0" # puma wev-server
 gem "jbuilder" # build JSON API
 gem "rswag", "~> 2.15"
-
+gem "csv"
 gem "jwt", "~> 2.9"
 gem "bcrypt", "~> 3.1.7" # for crypt passwords
 
-gem "redis", "~> 5.3"
-gem "sidekiq", "~> 7.3"
+
 
 gem "image_processing", "~> 1.2" # для загрузки изображений
 

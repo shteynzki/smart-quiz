@@ -5,7 +5,17 @@ Rails.application.configure do
 
   # Code is not reloaded between requests.
   config.enable_reloading = false
+config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.smtp_settings = {
+    address:              'smtp.yandex.ru',
+    port:                 465,
+    user_name:            ENV.fetch('SMTP_USER', 'your_email@yandex.ru'),
+    password:             ENV.fetch('SMTP_PASSWORD', 'your_app_password'),
+    authentication:       :plain,
 
+    tls:                  true
+  }
   # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
   config.eager_load = true
 
