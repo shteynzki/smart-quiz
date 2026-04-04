@@ -40,6 +40,17 @@ def index
     end
   end
 
+  def confirm_email
+    lead = Lead.find_by(id: params[:id])
+    
+    if lead && lead.email.present?
+      LeadMailer.client_copy_email(lead).deliver_later
+      render json: { message: 'Письмо успешно отправлено' }, status: :ok
+    else
+      render json: { error: 'Лид не найден или email не указан' }, status: :unprocessable_entity
+    end
+  end
+
   private
 
  def lead_params

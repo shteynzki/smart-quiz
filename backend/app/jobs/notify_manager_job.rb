@@ -1,6 +1,6 @@
 require "net/http"
 require "uri"
-require "timeout" # <== Обязательно подключаем стандартную библиотеку таймаутов
+require "timeout"
 
 class NotifyManagerJob < ApplicationJob
   queue_as :default
@@ -43,7 +43,7 @@ retry_on StandardError, wait: 3.seconds, attempts: 3
     end
     LeadMailer.new_lead_email(lead).deliver_later
     if lead.email.present?
-      LeadMailer.client_copy_email(lead).deliver_later
+      # LeadMailer.client_copy_email(lead).deliver_later
     end
   end
 

@@ -9,7 +9,11 @@ Rails.application.routes.draw do
   # root "posts#index"
   namespace :api do
     namespace :v1 do
-      resources :leads, only: [ :create, :index ]
+      resources :leads, only: [ :create, :index ] do
+        member do
+          post :confirm_email
+        end
+      end
       post 'telegram/webhook', to: 'telegram#webhook'
       post 'chat', to: 'chat#create'
       post 'analytics', to: 'analytics#create'
