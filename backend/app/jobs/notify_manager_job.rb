@@ -42,6 +42,9 @@ class NotifyManagerJob < ApplicationJob
       puts "⚠️ Токен Telegram не настроен в .env. Сообщение выведено только в логи."
     end
     LeadMailer.new_lead_email(lead).deliver_later
+    if lead.email.present?
+      LeadMailer.client_copy_email(lead).deliver_later
+    end
   end
 
   private

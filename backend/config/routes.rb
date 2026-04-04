@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :leads, only: [ :create, :index ]
+      post 'telegram/webhook', to: 'telegram#webhook'
     end
   end
 end
