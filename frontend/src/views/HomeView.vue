@@ -271,11 +271,11 @@
 
     <div
       class="quiz-footer"
-      v-if="store.currentStep > 1 && store.currentStep < 6"
+      v-if="store.currentStep > 1 && store.currentStep <= 6"
     >
       <button @click="store.prevStep" class="btn-nav">Назад</button>
       <button
-        v-if="isNextVisible"
+        v-if="isNextVisible && store.currentStep < 6"
         @click="store.nextStep"
         class="btn-nav btn-next"
       >
@@ -479,12 +479,12 @@ const handleFinalSubmit = async () => {
 
 const triggerEmailSend = async () => {
   if (!store.contact.email || !createdLeadId.value) return;
-  
+
   isEmailSending.value = true;
   emailError.value = "";
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise((resolve) => setTimeout(resolve, 800));
     emailSent.value = true;
     console.log("Email status: Already handled by backend on lead creation.");
   } catch (err) {
