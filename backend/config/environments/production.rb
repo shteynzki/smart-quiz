@@ -8,8 +8,8 @@ Rails.application.configure do
 config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
   config.action_mailer.smtp_settings = {
-    address:              'smtp.yandex.ru',
-    port:                 465,
+    address:              ENV.fetch("SMTP_ADDRESS", 'smtp.example.ru'),
+    port:                 ENV.fetch("SMTP_PORT", '111'),
     user_name:            ENV.fetch('SMTP_USER', 'your_email@yandex.ru'),
     password:             ENV.fetch('SMTP_PASSWORD', 'your_app_password'),
     authentication:       :plain,
@@ -65,7 +65,7 @@ config.action_mailer.delivery_method = :smtp
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
+  config.action_mailer.default_url_options = { host: ENV.fetch("HOST", '3000')}
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   # config.action_mailer.smtp_settings = {

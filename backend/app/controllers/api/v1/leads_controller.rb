@@ -24,7 +24,7 @@ class Api::V1::LeadsController < ApplicationController
   end
 
   def index
-    return render json: { error: 'Forbidden' }, status: :forbidden unless params[:secret] == 'super_hackathon_key'
+    return render json: { error: 'Forbidden' }, status: :forbidden unless params[:secret] == ENV["LEADS_EXPORT_SECRET"]
     leads = Lead.all
     
     # Безопасный способ для API-only контроллеров (без respond_to)
