@@ -16,6 +16,7 @@ RSpec.describe 'api/v1/leads', type: :request do
             properties: {
               name: { type: :string, example: 'Иван' },
               phone: { type: :string, example: '+7 (900) 000-00-00' },
+              consent: { type: :boolean, example: true },
               email: { type: :string, example: 'example@mail.ru', nullable: true },
               comment: { type: :string, example: 'Нужен дизайн-проект для новой квартиры', nullable: true },
               page_url: { type: :string, example: 'https://site.ru/quiz' },
@@ -35,7 +36,7 @@ RSpec.describe 'api/v1/leads', type: :request do
                 }
               }
             },
-            required: [ 'name', 'phone', 'answers' ]
+            required: [ 'name', 'phone', 'consent', 'answers' ]
           }
         },
         required: [ 'lead' ]
@@ -44,11 +45,18 @@ RSpec.describe 'api/v1/leads', type: :request do
       response(201, 'Заявка успешно отправлена') do
         let(:payload) do
           { 
-            lead: { 
-              name: 'Иван', 
-              phone: '+79001234567', 
-              answers: { 'step_2' => ['Кухня'] } 
-            } 
+              lead: {
+                name: 'Иван',
+                phone: '+79001234567',
+                consent: true,
+                answers: {
+                  'step_1' => 'Квартира',
+                  'step_2' => ['Кухня'],
+                  'step_3' => 85,
+                  'step_4' => 'Минимализм',
+                  'step_5' => '1 000 000 - 2 000 000 ₽'
+                }
+              }
           }
         end
         run_test!
@@ -57,10 +65,17 @@ RSpec.describe 'api/v1/leads', type: :request do
       response(422, 'Ошибка валидации (нет телефона)') do
         let(:payload) do
           { 
-            lead: { 
-              name: 'Иван', 
-              answers: { 'step_2' => ['Кухня'] } 
-            } 
+            lead: {
+              name: 'Иван',
+              consent: true,
+              answers: {
+                'step_1' => 'Квартира',
+                'step_2' => ['Кухня'],
+                'step_3' => 85,
+                'step_4' => 'Минимализм',
+                'step_5' => '1 000 000 - 2 000 000 ₽'
+              }
+            }
           }
         end
         run_test!
