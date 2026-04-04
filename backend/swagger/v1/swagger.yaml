@@ -21,51 +21,57 @@ paths:
             schema:
               type: object
               properties:
-                name:
-                  type: string
-                  example: Иван
-                phone:
-                  type: string
-                  example: "+7 (900) 000-00-00"
-                email:
-                  type: string
-                  example: example@mail.ru
-                  nullable: true
-                room_type:
-                  type: string
-                  example: Квартира
-                zones:
-                  type: array
-                  items:
-                    type: string
-                  example:
-                  - Кухня
-                  - Гостиная
-                  - Спальня
-                area:
-                  type: integer
-                  example: 85
-                style:
-                  type: string
-                  example: Минимализм
-                budget:
-                  type: string
-                  example: 1 000 000 - 2 000 000 ₽
-                comment:
-                  type: string
-                  example: Нужен дизайн-проект для новой квартиры
-                  nullable: true
-                page_url:
-                  type: string
-                  example: https://site.ru/quiz
-                utm_source:
-                  type: string
-                  example: yandex
+                lead:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: Иван
+                    phone:
+                      type: string
+                      example: "+7 (900) 000-00-00"
+                    email:
+                      type: string
+                      example: example@mail.ru
+                      nullable: true
+                    comment:
+                      type: string
+                      example: Нужен дизайн-проект для новой квартиры
+                      nullable: true
+                    page_url:
+                      type: string
+                      example: https://site.ru/quiz
+                    utm_source:
+                      type: string
+                      example: yandex
+                      nullable: true
+                    answers:
+                      type: object
+                      properties:
+                        step_1:
+                          type: string
+                          example: Квартира
+                        step_2:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                          - Кухня
+                          - Гостиная
+                        step_3:
+                          type: integer
+                          example: 85
+                        step_4:
+                          type: string
+                          example: Минимализм
+                        step_5:
+                          type: string
+                          example: 1 000 000 - 2 000 000 ₽
+                  required:
+                  - name
+                  - phone
+                  - answers
               required:
-              - name
-              - phone
+              - lead
 servers:
-- url: https://{defaultHost}
-  variables:
-    defaultHost:
-      default: www.example.com
+- url: http://127.0.0.1

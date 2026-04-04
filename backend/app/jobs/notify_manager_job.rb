@@ -1,5 +1,6 @@
 require "net/http"
 require "uri"
+require "timeout" # <== Обязательно подключаем стандартную библиотеку таймаутов
 
 class NotifyManagerJob < ApplicationJob
   queue_as :default
@@ -9,7 +10,7 @@ class NotifyManagerJob < ApplicationJob
     return unless lead
 
     # 1. Формируем красивый текст сообщения
-    # Используем данные из обычных колонок и из JSON-колонки answers
+    # ВАЖНО: Теперь используем красивые ключи (room_type, area и т.д.)
     text = <<~MSG
       🚀 <b>НОВАЯ ЗАЯВКА ИЗ КВИЗА!</b>
 
@@ -17,24 +18,21 @@ class NotifyManagerJob < ApplicationJob
       📞 <b>Телефон:</b> #{lead.phone}
       ✉️ <b>Email:</b> #{lead.email.presence || 'Не указан'}
 
-      🏠 <b>Помещение:</b> #{lead.answers['step_1'] || 'Не указано'}
-      📏 <b>Площадь:</b> #{lead.answers['step_3'] || '?'} м2
-      🛠 <b>Зоны:</b> #{Array(lead.answers['step_2']).join(', ').presence || 'Не выбраны'}
-      🎨 <b>Стиль:</b> #{lead.answers['step_4'] || 'Не указан'}
-      💰 <b>Бюджет:</b> #{lead.answers['step_5'] || 'Не указан'}
+      🏠 <b>Помещение:</b> #{lead.answers['room_type'] || 'Не указано'}
+      📏 <b>Площадь:</b> #{lead.answers['area'] || '?'} м2
+      🛠 <b>Зоны:</b> #{Array(lead.answers['zones']).join(', ').presence || 'Не выбраны'}
+      🎨 <b>Стиль:</b> #{lead.answers['style'] || 'Не указан'}
+      💰 <b>Бюджет:</b> #{lead.answers['budget'] || 'Не указан'}
       💬 <b>Комментарий:</b> #{lead.comment.presence || 'Нет'}
 
       🔗 <b>Источник:</b> #{lead.page_url || 'Не указан'}
       🕒 <b>Дата и время:</b> #{lead.created_at.in_time_zone('Moscow').strftime('%d.%m.%Y в %H:%M')}
     MSG
 
-    # 2. Выводим текст в консоль сервера (для удобства отладки)
     puts "============================================="
     puts text
     puts "============================================="
 
-    # 3. Реальная отправка в Telegram
-    # Токены мы будем брать из переменных окружения .env (чтобы не светить их в коде)
     bot_token = ENV["TELEGRAM_BOT_TOKEN"]
     chat_id = ENV["TELEGRAM_CHAT_ID"]
 
@@ -51,16 +49,16 @@ class NotifyManagerJob < ApplicationJob
   def send_to_telegram(token, chat_id, text)
     uri = URI.parse("https://api.telegram.org/bot#{token}/sendMessage")
 
-    # Отправляем POST-запрос к API Telegram
-    response = Net::HTTP.post_form(uri,
-      chat_id: chat_id,
-      text: text,
-      parse_mode: "HTML"
-    )
-
-    unless response.is_a?(Net::HTTPSuccess)
-      Rails.logger.error "Ошибка отправки в ТГ: #{response.body}"
+    # Оборачиваем запрос в таймаут (5 секунд)
+    Timeout.timeout(5) do
+      response = Net::HTTP.post_form(uri, chat_id: chat_id, text: text, parse_mode: "HTML")
+      unless response.is_a?(Net::HTTPSuccess)
+        Rails.logger.error "Ошибка отправки в ТГ: #{response.body}"
+      end
     end
+  rescue Timeout::Error
+    # Сработает, если API Telegram зависнет и не ответит за 5 секунд
+    Rails.logger.error "Таймаут: сервер Telegram не ответил вовремя"
   rescue StandardError => e
     Rails.logger.error "Сетевая ошибка при отправке в ТГ: #{e.message}"
   end

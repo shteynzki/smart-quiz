@@ -23,14 +23,29 @@ class Api::V1::LeadsController < ApplicationController
     end
   end
 
+  def index
+    # В идеале здесь должна быть проверка токена администратора!
+    leads = Lead.all
+    
+    # Безопасный способ для API-only контроллеров (без respond_to)
+    if request.format.csv?
+      send_data leads.to_csv, filename: "leads-#{Date.today}.csv"
+    else
+      render json: leads
+    end
+  end
+
   private
 
   def lead_params
-    # Добавляем utm-метки и разрешаем вложенный хэш answers
     params.require(:lead).permit(
-      :name, :phone, :email, :comment, :page_url,
+      :name, :phone, :email, :comment, :page_url, :consent,
       :utm_source, :utm_medium, :utm_campaign, :utm_content, :utm_term,
-      answers: {} # Разрешает любые ключи внутри объекта answers
+      # Явно описываем структуру jsonb
+      answers: [
+        :step_1, :step_3, :step_4, :step_5,
+        step_2: [] # Пустые скобки говорят Rails: "Тут будет массив, пропусти его"
+      ]
     )
   end
 end
