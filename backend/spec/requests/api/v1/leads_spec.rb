@@ -25,10 +25,10 @@ RSpec.describe 'api/v1/leads', type: :request do
                 type: :object,
                 properties: {
                   step_1: { type: :string, example: 'Квартира' },
-                  step_2: { 
-                    type: :array, 
-                    items: { type: :string }, 
-                    example: [ 'Кухня', 'Гостиная' ] 
+                  step_2: {
+                    type: :array,
+                    items: { type: :string },
+                    example: [ 'Кухня', 'Гостиная' ]
                   },
                   step_3: { type: :integer, example: 85 },
                   step_4: { type: :string, example: 'Минимализм' },
@@ -44,14 +44,14 @@ RSpec.describe 'api/v1/leads', type: :request do
 
       response(201, 'Заявка успешно отправлена') do
         let(:payload) do
-          { 
+          {
               lead: {
                 name: 'Иван',
                 phone: '+79001234567',
                 consent: true,
                 answers: {
                   'step_1' => 'Квартира',
-                  'step_2' => ['Кухня'],
+                  'step_2' => [ 'Кухня' ],
                   'step_3' => 85,
                   'step_4' => 'Минимализм',
                   'step_5' => '1 000 000 - 2 000 000 ₽'
@@ -64,13 +64,13 @@ RSpec.describe 'api/v1/leads', type: :request do
 
       response(422, 'Ошибка валидации (нет телефона)') do
         let(:payload) do
-          { 
+          {
             lead: {
               name: 'Иван',
               consent: true,
               answers: {
                 'step_1' => 'Квартира',
-                'step_2' => ['Кухня'],
+                'step_2' => [ 'Кухня' ],
                 'step_3' => 85,
                 'step_4' => 'Минимализм',
                 'step_5' => '1 000 000 - 2 000 000 ₽'

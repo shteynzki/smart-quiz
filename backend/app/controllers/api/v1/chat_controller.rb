@@ -28,14 +28,14 @@ class Api::V1::ChatController < ApplicationController
       ai_message = response.dig("choices", 0, "message", "content")
       if messages.any?
   AnalyticsEvent.create(
-    event_type: 'ai_chat_interaction',
+    event_type: "ai_chat_interaction",
     session_id: request.remote_ip,
-    payload: { 
-      user_query: messages.last[:content], 
-      ai_response: ai_message 
+    payload: {
+      user_query: messages.last[:content],
+      ai_response: ai_message
     }
   )
-end
+      end
       render json: { message: ai_message }
     else
       # Если есть ошибка в ключе 'error', выводим её в лог

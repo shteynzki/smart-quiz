@@ -3,12 +3,12 @@ require "rails_helper"
 RSpec.describe LeadMailer, type: :mailer do
   describe 'new_lead_email' do
     # Используем create!, чтобы запись попала в БД и получила created_at
-    let(:lead) do 
+    let(:lead) do
       Lead.create!(
-        name: 'Хакатон', 
-        phone: '+79001234567', 
-        answers: { 'step_2' => ['Кухня'] } # Обязательно передаем зону
-      ) 
+        name: 'Хакатон',
+        phone: '+79001234567',
+        answers: { 'step_2' => [ 'Кухня' ] } # Обязательно передаем зону
+      )
     end
     let(:mail) { LeadMailer.new_lead_email(lead) }
 

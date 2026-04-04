@@ -54,7 +54,7 @@ Rails.application.configure do
 
   # Отключаем проверку хостов в тестах (чтобы Swagger работал)
   config.middleware.remove ActionDispatch::HostAuthorization
-  
+
   # Говорим Rails использовать тестовую очередь для Job'ов
   config.active_job.queue_adapter = :test
 end

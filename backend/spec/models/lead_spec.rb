@@ -5,7 +5,7 @@ RSpec.describe Lead, type: :model do
     let(:valid_answers) do
       {
         'step_1' => 'Квартира',
-        'step_2' => ['Кухня', 'Спальня'],
+        'step_2' => [ 'Кухня', 'Спальня' ],
         'step_3' => 60,
         'step_4' => 'Минимализм',
         'step_5' => '1 000 000 - 2 000 000 ₽'

@@ -6,9 +6,9 @@ def create
 
     if result.success?
       # Фронтенд ожидает JSON с сообщением и ID
-      render json: { 
-        message: "Заявка успешно отправлена", 
-        id: result.lead.id 
+      render json: {
+        message: "Заявка успешно отправлена",
+        id: result.lead.id
       }, status: :created
     else
       render json: { errors: result.errors }, status: :unprocessable_entity
@@ -17,11 +17,11 @@ def create
 
 def index
     # 1. Безопасная проверка секрета из .env
-    secret = ENV.fetch('LEADS_REPORT_SECRET', 'fallback_key_for_dev')
-  return render json: { error: 'Forbidden' }, status: :forbidden unless params[:secret] == secret
-  
+    secret = ENV.fetch("LEADS_REPORT_SECRET", "fallback_key_for_dev")
+  return render json: { error: "Forbidden" }, status: :forbidden unless params[:secret] == secret
+
   leads = Lead.all.order(created_at: :desc)
-    
+
     # 3. Отдаем либо CSV, либо пагинированный JSON
     if request.format.csv?
       send_data leads.to_csv, filename: "leads-#{Date.today}.csv"
@@ -42,12 +42,12 @@ def index
 
   def confirm_email
     lead = Lead.find_by(id: params[:id])
-    
+
     if lead && lead.email.present?
       LeadMailer.client_copy_email(lead).deliver_later
-      render json: { message: 'Письмо успешно отправлено' }, status: :ok
+      render json: { message: "Письмо успешно отправлено" }, status: :ok
     else
-      render json: { error: 'Лид не найден или email не указан' }, status: :unprocessable_entity
+      render json: { error: "Лид не найден или email не указан" }, status: :unprocessable_entity
     end
   end
 

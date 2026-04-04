@@ -10,10 +10,10 @@ class ApplicationController < ActionController::API
   def handle_standard_error(e)
     # Пишем подробности в лог сервера
     Rails.logger.error "[API_ERROR] #{e.class}: #{e.message}\n#{e.backtrace.first(10).join("\n")}"
-    
-    render json: { 
-      error: "Internal Server Error", 
-      message: "На сервере что-то пошло не так. Мы уже в курсе." 
+
+    render json: {
+      error: "Internal Server Error",
+      message: "На сервере что-то пошло не так. Мы уже в курсе."
     }, status: :internal_server_error
   end
 

@@ -14,9 +14,9 @@ Rails.application.routes.draw do
           post :confirm_email
         end
       end
-      post 'telegram/webhook', to: 'telegram#webhook'
-      post 'chat', to: 'chat#create'
-      post 'analytics', to: 'analytics#create'
+      post "telegram/webhook", to: "telegram#webhook"
+      post "chat", to: "chat#create"
+      post "analytics", to: "analytics#create"
     end
   end
 end

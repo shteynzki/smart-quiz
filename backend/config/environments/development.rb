@@ -36,7 +36,7 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
 
   # Set localhost to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: ENV.fetch("HOST", '3000'), port: ENV.fetch("FRONT_PORT", 'http://localhost') }
+  config.action_mailer.default_url_options = { host: ENV.fetch("HOST", "3000"), port: ENV.fetch("FRONT_PORT", "http://localhost") }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
@@ -74,17 +74,17 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true # Важно для отладки!
-  config.action_mailer.default_url_options = { host: ENV.fetch("HOST", '3000'), port: ENV.fetch("FRONT_PORT", 'http://localhost') }
-  
+  config.action_mailer.default_url_options = { host: ENV.fetch("HOST", "3000"), port: ENV.fetch("FRONT_PORT", "http://localhost") }
+
 config.action_mailer.smtp_settings = {
-    address:              ENV.fetch("SMTP_ADDRESS", 'smtp.example.ru'),
-    port:                 ENV.fetch("SMTP_PORT", '111'),
-    user_name:            ENV.fetch('SMTP_USER', 'user@example.ru'),
-    password:             ENV.fetch('SMTP_PASSWORD', 'password'),
+    address:              ENV.fetch("SMTP_ADDRESS", "smtp.example.ru"),
+    port:                 ENV.fetch("SMTP_PORT", "111"),
+    user_name:            ENV.fetch("SMTP_USER", "user@example.ru"),
+    password:             ENV.fetch("SMTP_PASSWORD", "password"),
     authentication:       :plain,
     ssl:                  true,
     enable_starttls_auto: false,
-    openssl_verify_mode:  'none'
+    openssl_verify_mode:  "none"
   }
   config.hosts << /.*\.ngrok-free\.dev/
   config.hosts << /.*\.ngrok-free\.app/
