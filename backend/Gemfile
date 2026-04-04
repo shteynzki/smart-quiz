@@ -9,7 +9,7 @@ gem "csv"
 #gem "jwt", "~> 2.9"
 #gem "bcrypt", "~> 3.1.7" # for crypt passwords
 #gem "rspec"
-gem 'brakeman'
+gem "brakeman"
 
 #gem "image_processing", "~> 1.2" # для загрузки изображений
 
