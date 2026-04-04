@@ -3,7 +3,7 @@ default: &default
   encoding: unicode
   host: <%= ENV.fetch('DB_HOST', 'localhost') %>
   port: <%= ENV.fetch('DB_PORT', 5432) %>
-  username: <%= ENV.fetch('DB_USERNAME', 'pguser') %>
+  username: <%= ENV.fetch('DB_USER', 'pguser') %>
   password: <%= ENV.fetch('DB_PASSWORD', 'pgpass') %>
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 

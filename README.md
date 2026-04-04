@@ -4,6 +4,8 @@ copy .env.example .env
 copy frontend/.env.example frontend/.env
 docker compose up -d --build
 
+Для Docker-сценария используйте:
+`VITE_API_BASE_URL=/api/v1`
 
 Чтобы посмотреть JSON со всеми заявками: http://localhost:3000/api/v1/leads?secret=super_hackathon_key
 

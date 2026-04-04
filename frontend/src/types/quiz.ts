@@ -16,6 +16,7 @@ export interface UserContact {
 // Финальный объект для отправки (Lead)
 export interface CreateLeadPayload {
   lead: UserContact & {
+    consent: boolean;
     answers: QuizAnswers;
     page_url: string;
     utm_source?: string;
