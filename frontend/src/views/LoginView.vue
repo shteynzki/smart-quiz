@@ -144,4 +144,80 @@ const fakeLogin = () => {
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
+
+@media (max-width: 1023px) {
+  .login-card-refined {
+    max-width: 440px;
+    min-height: 480px;
+  }
+
+  .login-title {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 767px) {
+  .login-page {
+    padding: 15px;
+  }
+
+  .login-card-refined {
+    max-width: 100%;
+    border-radius: 20px;
+    min-height: 450px;
+  }
+
+  .card-content {
+    padding: 40px 25px;
+  }
+
+  .login-title {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 375px) {
+  .login-card-refined {
+    min-height: 420px;
+  }
+
+  .login-title {
+    font-size: 20px;
+  }
+
+  .login-subtitle {
+    font-size: 15px;
+  }
+
+  .start-button-refined {
+    padding: 12px 30px;
+    font-size: 13px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 320px) {
+  .login-page {
+    padding: 10px;
+  }
+
+  .card-content {
+    padding: 30px 20px;
+  }
+
+  .login-title {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+
+  .login-subtitle {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .description-container {
+    margin-bottom: 30px;
+  }
+}
 </style>
