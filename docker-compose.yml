@@ -25,6 +25,7 @@ services:
       RAILS_ENV: ${RAILS_ENV:-development}
       RAILS_GROUPS: ${RAILS_GROUPS:-assets}
       RAILS_API: ${RAILS_API:-/api/v1}
+      PUMA_PORT: ${PUMA_PORT:-3000}
       DB_USER: ${DB_USERNAME:-pguser}
       DB_PASSWORD: ${DB_PASSWORD:-pgpass}
       DB_NAME: ${DB_NAME:-pgdb}
