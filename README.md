@@ -99,6 +99,12 @@ docker compose logs -f frontend
 docker compose exec backend bundle exec rake rswag:specs:swaggerize
 ```
 
+Сгенерировать и посмотреть документацию по rails
+
+```
+docker compose exec backend bundle exec rdoc
+```
+
 ## API и полезные ссылки
 
 Swagger UI:
