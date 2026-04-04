@@ -569,7 +569,7 @@ const triggerEmailSend = async () => {
   }
 };
 
-onst downloadAnswers = () => {
+const downloadAnswers = () => {
   // Формируем красивый текст из всех данных стора
   const summary = `
 Ваша заявка на дизайн-проект:
