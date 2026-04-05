@@ -4,7 +4,7 @@ class Api::V1::ChatController < ApplicationController
   def create
     client = OpenAI::Client.new(
       access_token: ENV.fetch("NVIDIA_API_KEY"),
-      uri_base: "https://integrate.api.nvidia.com/v1",
+      uri_base: ENV.fetch("NVIDIA_URL"),
       request_timeout: 60
     )
 
