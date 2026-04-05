@@ -1,4 +1,4 @@
-frontend_host = ENV.fetch("FRONT_URL", "http://localhost")
+frontend_host = ENV.fetch("HOST", "http://localhost")
 frontend_port = ENV.fetch("FRONT_PORT", "3000")
 frontend_origin = "#{frontend_host}:#{frontend_port}"
 

@@ -13,6 +13,6 @@ Rswag::Ui.configure do |c|
   c.swagger_endpoint "#{api_base}/api-docs/swagger.yaml", "API Docs"
 
   # Add Basic Auth in case your API is private
-  c.basic_auth_enabled = true
-  c.basic_auth_credentials "#{swagger_user}", "#{swagger_pass}"
+  # c.basic_auth_enabled = true
+  # c.basic_auth_credentials "#{swagger_user}", "#{swagger_pass}"
 end
