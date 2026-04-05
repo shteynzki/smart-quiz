@@ -40,12 +40,13 @@ services:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
       LEADS_EXPORT_SECRET: ${LEADS_EXPORT_SECRET:-supersecret}
-      HOST: ${HOST:-http://localhost}
+      HOST: ${HOST:-localhost}
+      FRONT_URL: ${FRONT_URL:-http://localhost}
       NVIDIA_API_KEY: ${NVIDIA_API_KEY}
       NVIDIA_MODEL: ${NVIDIA_MODEL}
       NVIDIA_URL: ${NVIDIA_URL}
     ports:
-      - "${BACK_PORT:-8000}:3000"
+      - "127.0.0.1:${BACK_PORT:-8000}:3000"
     volumes:
     - ./backend:/app
 
@@ -59,5 +60,5 @@ services:
       backend:
         condition: service_started
     ports:
-      - "${FRONT_PORT:-3000}:80"
+      - "127.0.0.1:${FRONT_PORT:-3000}:80"
       
