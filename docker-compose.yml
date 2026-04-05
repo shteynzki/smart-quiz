@@ -26,6 +26,8 @@ services:
       RAILS_GROUPS: ${RAILS_GROUPS:-assets}
       RAILS_API: ${RAILS_API:-/api/v1}
       PUMA_PORT: ${PUMA_PORT:-3000}
+      SWAGGER_USER: ${SWAGGER_USER:-user}
+      SWAGGER_PASS: ${SWAGGER_PASS:-password}
       DB_USER: ${DB_USERNAME:-pguser}
       DB_PASSWORD: ${DB_PASSWORD:-pgpass}
       DB_NAME: ${DB_NAME:-pgdb}
@@ -41,6 +43,7 @@ services:
       HOST: ${HOST:-http://localhost}
       NVIDIA_API_KEY: ${NVIDIA_API_KEY}
       NVIDIA_MODEL: ${NVIDIA_MODEL}
+      NVIDIA_URL: ${NVIDIA_URL}
     ports:
       - "${BACK_PORT:-8000}:3000"
     volumes:

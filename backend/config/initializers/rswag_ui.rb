@@ -1,5 +1,7 @@
 Rswag::Ui.configure do |c|
   api_base = ENV.fetch("RAILS_API", "/api/v1")
+  swagger_user = ENV.fetch("SWAGGER_USER", "user")
+  swagger_pass = ENV.fetch("SWAGGER_PASS", "password")
   # List the Swagger endpoints that you want to be documented through the
   # swagger-ui. The first parameter is the path (absolute or relative to the UI
   # host) to the corresponding endpoint and the second is a title that will be
@@ -11,6 +13,6 @@ Rswag::Ui.configure do |c|
   c.swagger_endpoint "#{api_base}/api-docs/swagger.yaml", "API Docs"
 
   # Add Basic Auth in case your API is private
-  # c.basic_auth_enabled = true
-  # c.basic_auth_credentials 'username', 'password'
+  c.basic_auth_enabled = true
+  c.basic_auth_credentials "#{swagger_user}", "#{swagger_pass}"
 end
