@@ -4,6 +4,70 @@ info:
   title: API V1
   version: v1
 paths:
+  "/api/v1/analytics":
+    post:
+      summary: Сохранить аналитическое событие
+      tags:
+      - Analytics
+      parameters: []
+      responses:
+        '200':
+          description: Событие сохранено
+        '422':
+          description: Ошибка валидации
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_type:
+                  type: string
+                  example: quiz_step_completed
+                session_id:
+                  type: string
+                  example: session-123
+                payload:
+                  type: object
+                  additionalProperties: true
+                  example:
+                    step: 3
+                    answer: Минимализм
+              required:
+              - event_type
+  "/api/v1/chat":
+    post:
+      summary: Отправить сообщение в AI-чат
+      tags:
+      - Chat
+      parameters: []
+      responses:
+        '200':
+          description: Ответ от AI получен
+        '503':
+          description: Нейросеть временно недоступна
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                messages:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                        example: user
+                      content:
+                        type: string
+                        example: Помоги выбрать стиль интерьера
+                    required:
+                    - role
+                    - content
+              required:
+              - messages
   "/api/v1/leads":
     post:
       summary: Отправить заявку на дизайн-проект (Квиз)
@@ -77,6 +141,72 @@ paths:
                   - answers
               required:
               - lead
+    get:
+      summary: Получить список заявок
+      tags:
+      - Заявки (Leads)
+      parameters:
+      - name: secret
+        in: query
+        required: true
+        description: Секретный ключ для доступа к выгрузке лидов
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        description: Номер страницы для пагинации
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Список заявок получен
+        '403':
+          description: Доступ запрещён
+  "/api/v1/leads/{id}/confirm_email":
+    post:
+      summary: Повторно отправить письмо клиенту
+      tags:
+      - Заявки (Leads)
+      parameters:
+      - name: id
+        in: path
+        description: ID лида
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Письмо успешно отправлено
+        '422':
+          description: Лид не найден или email не указан
+  "/api/v1/telegram/webhook":
+    post:
+      summary: Получить webhook от Telegram
+      tags:
+      - Telegram
+      parameters: []
+      responses:
+        '200':
+          description: Webhook обработан
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: object
+                  properties:
+                    text:
+                      type: string
+                      example: "/start 123"
+                    chat:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 123456789
 servers:
 - url: http://localhost:3000
   variables:

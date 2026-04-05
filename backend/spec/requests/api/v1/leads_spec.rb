@@ -2,6 +2,7 @@ require 'swagger_helper'
 
 RSpec.describe 'api/v1/leads', type: :request do
   api_base = ENV.fetch("RAILS_API", "/api/v1")
+
   path "#{api_base}/leads" do
     post('Отправить заявку на дизайн-проект (Квиз)') do
       tags 'Заявки (Leads)'
@@ -77,6 +78,69 @@ RSpec.describe 'api/v1/leads', type: :request do
             }
           }
         end
+        run_test!
+      end
+    end
+
+    get('Получить список заявок') do
+      tags 'Заявки (Leads)'
+      produces 'application/json'
+      parameter name: :secret, in: :query, type: :string, required: true,
+                description: 'Секретный ключ для доступа к выгрузке лидов'
+      parameter name: :page, in: :query, type: :integer, required: false,
+                description: 'Номер страницы для пагинации'
+
+      response(200, 'Список заявок получен') do
+        let(:secret) { ENV.fetch("LEADS_EXPORT_SECRET", "supersecret") }
+        let(:page) { 1 }
+
+        before do
+          Lead.create!(
+            name: 'Иван',
+            phone: '+79001234567',
+            consent: true,
+            answers: { step_1: 'Квартира' }
+          )
+        end
+
+        run_test!
+      end
+
+      response(403, 'Доступ запрещён') do
+        let(:secret) { 'wrong-secret' }
+
+        run_test!
+      end
+    end
+  end
+
+  path "#{api_base}/leads/{id}/confirm_email" do
+    post('Повторно отправить письмо клиенту') do
+      tags 'Заявки (Leads)'
+      produces 'application/json'
+      parameter name: :id, in: :path, type: :string, description: 'ID лида'
+
+      response(200, 'Письмо успешно отправлено') do
+        let(:id) do
+          Lead.create!(
+            name: 'Мария',
+            phone: '+79005554433',
+            email: 'maria@example.com',
+            consent: true,
+            answers: { step_1: 'Дом' }
+          ).id
+        end
+
+        before do
+          allow(LeadMailer).to receive_message_chain(:client_copy_email, :deliver_later)
+        end
+
+        run_test!
+      end
+
+      response(422, 'Лид не найден или email не указан') do
+        let(:id) { '0' }
+
         run_test!
       end
     end
