@@ -3,6 +3,8 @@ class ApplicationController < ActionController::API
 
   rescue_from StandardError, with: :handle_standard_error
   rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
+  rescue_from ActionController::ParameterMissing, with: :handle_parameter_missing
+  rescue_from ActionDispatch::Http::Parameters::ParseError, with: :handle_parse_error
 
   private
 
@@ -17,5 +19,19 @@ class ApplicationController < ActionController::API
 
   def handle_not_found
     render json: { error: "Not Found", message: "Запись не найдена" }, status: :not_found
+  end
+
+  def handle_parameter_missing(e)
+    render json: {
+      error: "Bad Request",
+      message: "В запросе отсутствует обязательный параметр: #{e.param}"
+    }, status: :bad_request
+  end
+
+  def handle_parse_error(_e)
+    render json: {
+      error: "Bad Request",
+      message: "Не удалось разобрать тело запроса. Проверьте JSON и Content-Type."
+    }, status: :bad_request
   end
 end
