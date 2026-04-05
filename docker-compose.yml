@@ -21,14 +21,14 @@ services:
       postgres:
         condition: service_healthy
     environment:  
-      DATABASE_URL: postgresql://${DB_USERNAME:-pguser}:${DB_PASSWORD:-pgpass}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-pgdb}
+      DATABASE_URL: postgresql://${DB_USER:-pguser}:${DB_PASSWORD:-pgpass}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-pgdb}
       RAILS_ENV: ${RAILS_ENV:-development}
       RAILS_GROUPS: ${RAILS_GROUPS:-assets}
       RAILS_API: ${RAILS_API:-/api/v1}
       PUMA_PORT: ${PUMA_PORT:-3000}
       SWAGGER_USER: ${SWAGGER_USER:-user}
       SWAGGER_PASS: ${SWAGGER_PASS:-password}
-      DB_USER: ${DB_USERNAME:-pguser}
+      DB_USER: ${DB_USER:-pguser}
       DB_PASSWORD: ${DB_PASSWORD:-pgpass}
       DB_NAME: ${DB_NAME:-pgdb}
       DB_HOST: ${DB_HOST:-postgres}
