@@ -3,8 +3,6 @@
 require 'rails_helper'
 
 RSpec.configure do |config|
-  host = ENV.fetch("HOST", "http://localhost")
-  port = ENV.fetch("FRONT_PORT", "3000")
   # Specify a root folder where Swagger JSON files are generated
   # NOTE: If you're using the rswag-api to serve API descriptions, you'll need
   # to ensure that it's configured to serve Swagger from the same folder
@@ -26,7 +24,7 @@ RSpec.configure do |config|
       paths: {},
       servers: [
         {
-          url: "#{host}:#{port}",
+          url: "http://localhost:3000",
           variables: {
             defaultHost: {
               default: 'smart-quiz.ru'
